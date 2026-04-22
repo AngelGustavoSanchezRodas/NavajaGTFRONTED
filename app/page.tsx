@@ -10,11 +10,11 @@ export default function Home() {
       {/* Background Glows */}
       <BackgroundGlow
         color="turquoise"
-        className="left-[-10%] top-[-5%] h-[40rem] w-[40rem]"
+        className="left-[-10%] top-[-5%] h-[30rem] w-[30rem]"
       />
       <BackgroundGlow
         color="magenta"
-        className="right-[-10%] top-[10%] h-[30rem] w-[30rem]"
+        className="right-[-10%] top-[10%] h-[20rem] w-[20rem]"
       />
       <BackgroundGlow
         color="mustard"
@@ -22,26 +22,44 @@ export default function Home() {
       />
 
       <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="mx-auto flex w-full max-w-5xl flex-col items-center pt-28 pb-8 px-4 text-center">
-          <h1 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+        {/* Hero Section: Centered Layout (Search-First) */}
+        <section className="mx-auto flex w-full max-w-4xl flex-col items-center pt-24 pb-12 px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-turquoise/10 text-brand-turquoise font-bold text-xs uppercase tracking-wider mb-8 border border-brand-turquoise/20">
+            <span className="flex h-2 w-2 rounded-full bg-brand-turquoise animate-pulse" />
+            Nueva Versión: NavajaGT 2.0
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
             NavajaGT: Tu <span className="text-brand-turquoise">Navaja Suiza</span> Digital
           </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-500">
+          
+          <p className="text-lg text-slate-600 mb-10 max-w-2xl leading-relaxed">
             Herramientas online potentes y fáciles de usar para gestionar tus archivos digitales. 
             Organiza, convierte, edita y optimiza documentos en un solo lugar.
           </p>
           
-          <div className="w-full">
+          <div className="w-full mb-12">
             <UrlShortenerTool />
+          </div>
+
+          {/* Category Badges (Inspired by IAEstudio) */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {['PDF', 'Imagen', 'Video', 'Texto', 'Seguridad'].map((cat) => (
+              <span 
+                key={cat}
+                className="px-6 py-2 rounded-full bg-white border border-slate-100 text-slate-600 text-sm font-bold shadow-sm hover:border-brand-turquoise/30 hover:text-brand-turquoise transition-all cursor-default"
+              >
+                {cat}
+              </span>
+            ))}
           </div>
         </section>
 
         {/* Features Grid */}
         <section className="pb-16 pt-8">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-slate-900">Herramientas Profesionales</h2>
-            <p className="mt-4 text-slate-500">Todo lo que necesitas para gestionar tus archivos en un solo clic.</p>
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold text-slate-900">Herramientas Profesionales</h2>
+            <p className="mt-2 text-sm text-slate-500">Todo lo que necesitas para gestionar tus archivos en un solo clic.</p>
           </div>
           <FeaturesGrid />
         </section>

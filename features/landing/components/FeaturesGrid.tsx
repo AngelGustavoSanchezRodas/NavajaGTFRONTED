@@ -1,12 +1,21 @@
 import { 
-  Split, 
+  FileStack, 
   Scissors, 
-  FileArchive, 
-  Image as ImageIcon, 
+  Minimize2, 
+  FileImage, 
   FileText, 
-  Type, 
+  FilePenLine, 
   Lock, 
-  Unlock 
+  Unlock,
+  RotateCw,
+  Type,
+  Search,
+  FileCode,
+  Image as ImageIcon,
+  Zap,
+  Globe,
+  Trash2,
+  ShieldCheck
 } from "lucide-react";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
 import { cn } from "@/shared/lib/utils";
@@ -15,7 +24,7 @@ const TOOLS = [
   {
     title: "Unir PDF",
     description: "Combina múltiples archivos PDF en un solo documento. Rápido y seguro.",
-    icon: Split,
+    icon: FileStack,
     color: "text-brand-turquoise",
     bgColor: "bg-brand-turquoise/10",
   },
@@ -29,14 +38,14 @@ const TOOLS = [
   {
     title: "Comprimir PDF",
     description: "Reduce el tamaño de tus archivos PDF sin perder calidad.",
-    icon: FileArchive,
+    icon: Minimize2,
     color: "text-brand-turquoise",
     bgColor: "bg-brand-turquoise/10",
   },
   {
     title: "PDF a JPG",
     description: "Convierte páginas de PDF en imágenes JPG de alta calidad.",
-    icon: ImageIcon,
+    icon: FileImage,
     color: "text-brand-magenta",
     bgColor: "bg-brand-magenta/10",
   },
@@ -50,7 +59,7 @@ const TOOLS = [
   {
     title: "Editar PDF",
     description: "Añade texto, imágenes y formas a tus documentos PDF.",
-    icon: Type,
+    icon: FilePenLine,
     color: "text-brand-magenta",
     bgColor: "bg-brand-magenta/10",
   },
@@ -68,6 +77,34 @@ const TOOLS = [
     color: "text-brand-magenta",
     bgColor: "bg-brand-magenta/10",
   },
+  {
+    title: "Rotar PDF",
+    description: "Gira las páginas de tu PDF a la orientación deseada.",
+    icon: RotateCw,
+    color: "text-brand-turquoise",
+    bgColor: "bg-brand-turquoise/10",
+  },
+  {
+    title: "Marca de Agua",
+    description: "Añade texto o imágenes como marca de agua a tus PDF.",
+    icon: Type,
+    color: "text-brand-magenta",
+    bgColor: "bg-brand-magenta/10",
+  },
+  {
+    title: "OCR PDF",
+    description: "Convierte PDFs escaneados en texto editable.",
+    icon: Search,
+    color: "text-brand-turquoise",
+    bgColor: "bg-brand-turquoise/10",
+  },
+  {
+    title: "HTML a PDF",
+    description: "Convierte páginas web y código HTML a formato PDF.",
+    icon: FileCode,
+    color: "text-brand-magenta",
+    bgColor: "bg-brand-magenta/10",
+  },
 ];
 
 export function FeaturesGrid() {
@@ -77,17 +114,17 @@ export function FeaturesGrid() {
         {TOOLS.map((tool, index) => (
           <GlassCard 
             key={index} 
-            className="group flex h-full flex-col p-6 transition-all hover:-translate-y-1 hover:shadow-xl"
+            className="group flex h-full flex-col p-6 transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer border-slate-100/50"
           >
             <div className={cn(
-              "mb-4 flex h-10 w-10 items-center justify-center rounded-xl transition-colors",
+              "mb-5 flex h-12 w-12 items-center justify-center rounded-2xl transition-transform group-hover:scale-110",
               tool.bgColor,
               tool.color
             )}>
-              <tool.icon className="h-5 w-5" />
+              <tool.icon className="h-6 w-6" />
             </div>
-            <h3 className="mb-2 text-lg font-bold text-slate-900">{tool.title}</h3>
-            <p className="text-xs leading-relaxed text-slate-500">
+            <h3 className="mb-2 text-xl font-bold text-slate-900">{tool.title}</h3>
+            <p className="text-sm leading-relaxed text-slate-500">
               {tool.description}
             </p>
           </GlassCard>

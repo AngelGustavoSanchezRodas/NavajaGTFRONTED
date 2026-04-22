@@ -1,67 +1,53 @@
-import { CheckCircle2, MessageSquare, Mail, Phone } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
+
+const FEATURES = [
+  "Sin límites de tamaño",
+  "Procesamiento por lotes",
+  "Soporte prioritario",
+  "Sin anuncios",
+  "Firma digital ilimitada",
+  "Almacenamiento en la nube"
+];
 
 export function ContactSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <GlassCard className="overflow-hidden bg-brand-turquoise/5 p-8 md:p-12 border-none">
+      <GlassCard className="overflow-hidden bg-brand-turquoise/5 p-10 md:p-20 border-none rounded-[3rem]">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-          <div>
-            <h2 className="mb-6 text-3xl font-bold text-slate-900">
-              ¿Necesitas ayuda o funciones personalizadas?
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8">
+              Descubre NavajaGT <span className="text-brand-turquoise">Premium</span>
             </h2>
-            <p className="mb-8 text-slate-600">
-              Nuestro equipo de soporte está listo para ayudarte con cualquier duda sobre nuestras herramientas digitales.
-            </p>
             
-            <div className="mb-8 grid grid-cols-1 gap-y-4 gap-x-8 sm:grid-cols-2">
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-5 w-5 text-brand-turquoise" />
-                <span>Soporte 24/7</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-5 w-5 text-brand-turquoise" />
-                <span>Consultoría técnica</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-5 w-5 text-brand-turquoise" />
-                <span>API personalizada</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-5 w-5 text-brand-turquoise" />
-                <span>Planes para empresas</span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mb-12">
+              {FEATURES.map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-brand-turquoise" />
+                  <span className="text-slate-700 font-medium">{feature}</span>
+                </div>
+              ))}
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <button className="rounded-xl bg-brand-magenta px-8 py-3 font-bold text-white transition hover:bg-brand-magenta/90 shadow-lg shadow-brand-magenta/20">
-                Contactar Soporte
+              <button className="w-full sm:w-auto px-10 py-5 bg-brand-magenta hover:bg-brand-magenta/90 text-white font-bold rounded-2xl shadow-xl shadow-brand-magenta/20 transition-all transform hover:-translate-y-1">
+                Actualizar a Premium
               </button>
-              <button className="rounded-xl bg-white px-8 py-3 font-bold text-brand-turquoise border border-brand-turquoise/20 transition hover:bg-slate-50">
-                Ver Documentación
+              <button className="w-full sm:w-auto px-10 py-5 bg-white text-brand-turquoise font-bold rounded-2xl border border-brand-turquoise/20 hover:bg-slate-50 transition-all">
+                Contactar Soporte
               </button>
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
-            <div className="grid grid-cols-2 gap-4">
-              <GlassCard className="flex flex-col items-center justify-center p-6 text-center border-none bg-white/40">
-                <MessageSquare className="mb-3 h-8 w-8 text-brand-magenta" />
-                <span className="text-sm font-semibold">Chat en vivo</span>
-              </GlassCard>
-              <GlassCard className="flex flex-col items-center justify-center p-6 text-center border-none bg-white/40">
-                <Mail className="mb-3 h-8 w-8 text-brand-turquoise" />
-                <span className="text-sm font-semibold">Email</span>
-              </GlassCard>
-              <GlassCard className="flex flex-col items-center justify-center p-6 text-center border-none bg-white/40">
-                <Phone className="mb-3 h-8 w-8 text-brand-mustard" />
-                <span className="text-sm font-semibold">Teléfono</span>
-              </GlassCard>
-              <GlassCard className="flex flex-col items-center justify-center p-6 text-center border-none bg-white/40">
-                <CheckCircle2 className="mb-3 h-8 w-8 text-brand-turquoise" />
-                <span className="text-sm font-semibold">SLA Garantizado</span>
-              </GlassCard>
-            </div>
+          <div className="relative z-10 text-right hidden lg:block">
+            <div className="w-64 h-64 bg-brand-turquoise/20 rounded-full blur-3xl absolute -right-20 -top-20"></div>
+            <div className="w-48 h-48 bg-brand-magenta/20 rounded-full blur-3xl absolute -left-10 -bottom-10"></div>
+            <img 
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
+              alt="Premium dashboard"
+              className="w-96 rounded-3xl shadow-2xl relative z-10 rotate-3 grayscale opacity-80"
+              referrerPolicy="no-referrer"
+            />
           </div>
         </div>
       </GlassCard>
