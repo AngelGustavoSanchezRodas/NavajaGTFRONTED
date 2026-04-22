@@ -20,44 +20,40 @@ export function UrlShortenerTool() {
   };
 
   return (
-    <GlassCard className="w-full">
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <label htmlFor="shortener-url" className="text-sm text-slate-500">
-          Pega tu enlace largo
-        </label>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="flex h-14 flex-1 items-center rounded-2xl border border-slate-200/50 bg-white/50 px-4">
-            <Link className="mr-3 h-5 w-5 text-slate-400" />
-            <input
-              id="shortener-url"
-              type="url"
-              value={url}
-              onChange={(event) => setUrl(event.target.value)}
-              placeholder="https://tuenlace.com/..."
-              className="h-full w-full bg-transparent text-slate-900 outline-none placeholder:text-slate-400"
-              required
-            />
+    <GlassCard className="mx-auto w-full max-w-3xl border-none p-2 shadow-2xl shadow-brand-turquoise/10">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
+        <div className="relative flex flex-1 items-center">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
+            <Link className="h-5 w-5 text-slate-400" />
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-brand-turquoise px-6 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Procesando...
-              </>
-            ) : (
-              <>
-                <QrCode className="h-4 w-4" />
-                Acortar URL
-              </>
-            )}
-          </button>
+          <input
+            id="shortener-url"
+            type="url"
+            value={url}
+            onChange={(event) => setUrl(event.target.value)}
+            placeholder="Pega tu enlace largo aquí..."
+            className="h-16 w-full rounded-2xl bg-white/50 pl-14 pr-4 text-lg text-slate-900 outline-none transition-all focus:bg-white focus:ring-2 focus:ring-brand-turquoise/20 placeholder:text-slate-400"
+            required
+          />
         </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="group relative flex h-16 items-center justify-center gap-3 overflow-hidden rounded-2xl bg-brand-turquoise px-8 text-lg font-bold text-white transition-all hover:scale-[1.02] hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 sm:min-w-[200px]"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Procesando</span>
+            </>
+          ) : (
+            <>
+              <QrCode className="h-5 w-5 transition-transform group-hover:rotate-12" />
+              <span>Acortar ahora</span>
+            </>
+          )}
+        </button>
       </form>
     </GlassCard>
   );

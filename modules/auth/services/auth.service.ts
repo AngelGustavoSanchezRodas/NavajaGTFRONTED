@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/auth";
 
 class AuthService {
@@ -16,8 +18,8 @@ class AuthService {
       throw new Error(data?.message || "Error al iniciar sesión");
     }
 
-    if (typeof window !== "undefined" && data?.token) {
-      localStorage.setItem("token", data.token);
+    if (data?.token) {
+      Cookies.set("token", data.token, { expires: 7 });
     }
 
     return data;
@@ -42,25 +44,15 @@ class AuthService {
   }
 
   logout() {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-    }
+    Cookies.remove("token");
   }
 
   getToken() {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    return localStorage.getItem("token");
+    return Cookies.get("token") || null;
   }
 
   isAuthenticated() {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return !!localStorage.getItem("token");
+    return !!Cookies.get("token");
   }
 }
 

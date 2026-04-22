@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NavajaGT - Tu Navaja Suiza Digital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'nav-dark': '#0a1128',
+            'brand-teal': '#1abc9c',
+            'brand-pink': '#f06292',
+            'brand-red': '#e91e63',
+            'bg-light': '#f8fafc',
+            'premium-mint': '#e1f5f2',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-shadows">
+    .tool-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+    .tool-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+  </style>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head>
+<body class="bg-bg-light font-sans text-slate-800">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-16">
+<!-- Logo -->
+<div class="flex items-center gap-2" data-purpose="logo-container">
+<img alt="NavajaGT Logo" class="w-8 h-8 rounded-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEABbRniPfO2XELNux_hT71cmco8_7CIryU5WJHbYPLXXYx_vlGMQ57e8UoWTiiwr5sLmTWiG3Y_3qD1faydN8a3j3qJfDS-NambgIUWMdu7jIvQ6NM5vj70a76iNf84e0KKTJIm4IzL2dXp2Tb2ugbcw5uiKf6nmE6PbqzCt0p80SUpRli6bey1hrBBeXpjI5RrxPy04PvKshrog5li8rpVtf_wvEFNH1vu_YxoFn99KHAfPYNaT8GNchmVUG7ENr7GZIcAnbSQ"/>
+<span class="text-xl text-nav-dark tracking-tight font-extrabold">NavajaGT</span>
+</div>
+<!-- Desktop Navigation -->
+<nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-600">
+<a class="hover:text-brand-teal" href="#">Todas las Herramientas</a>
+<a class="hover:text-brand-teal" href="#">PDF</a>
+<a class="hover:text-brand-teal" href="#">Imagen</a>
+<a class="hover:text-brand-teal" href="#">Video</a>
+<a class="hover:text-brand-teal" href="#">Texto</a>
+<a class="hover:text-brand-teal" href="#">Precios</a>
+<a class="hover:text-brand-teal" href="#">Empresas</a>
+</nav>
+<!-- Auth Buttons -->
+<div class="flex items-center space-x-3">
+<button class="px-4 py-2 text-sm font-medium text-white bg-nav-dark rounded-md hover:bg-slate-800 transition-colors">Acceder</button>
+<button class="px-4 py-2 text-sm font-medium text-white bg-brand-teal rounded-md hover:bg-teal-600 transition-colors">Registro</button>
+</div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main>
+<!-- BEGIN: HeroSection -->
+<section class="pt-16 pb-12 px-4 text-center">
+<h1 class="text-4xl md:text-5xl font-extrabold text-nav-dark mb-4">NavajaGT: Tu Navaja Suiza Digital</h1>
+<p class="text-gray-500 max-w-2xl mx-auto text-lg mb-8">
+        Herramientas online potentes y fáciles de usar para gestionar tus archivos digitales. Organiza, convierte, edita y optimiza documentos en un solo lugar.
+      </p>
+<!-- Category Filters -->
+<div class="flex flex-wrap justify-center gap-3 mb-12"><button class="px-6 py-2 rounded-full bg-brand-teal text-white text-sm font-semibold">Todas</button>
+<button class="px-6 py-2 rounded-full bg-brand-pink text-white text-sm font-semibold">PDF</button>
+<button class="px-6 py-2 rounded-full bg-brand-pink text-white text-sm font-semibold">Imagen</button>
+<button class="px-6 py-2 rounded-full bg-brand-pink text-white text-sm font-semibold">Video</button>
+<button class="px-6 py-2 rounded-full bg-brand-pink text-white text-sm font-semibold">Texto</button>
+<button class="px-6 py-2 rounded-full bg-brand-pink text-white text-sm font-semibold">Seguridad</button></div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: ToolGrid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-brand-teal mb-4"><span class="material-symbols-outlined text-xl">splitscreen</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Unir PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Combina múltiples archivos PDF en un solo documento. Rápido y seguro.</p>
+</div>
+<!-- Card 2 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-brand-pink mb-4"><span class="material-symbols-outlined text-xl">call_split</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Dividir PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Extrae páginas o divide un PDF en varios archivos más pequeños.</p>
+</div>
+<!-- Card 3 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-brand-teal mb-4"><span class="material-symbols-outlined text-xl">compress</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Comprimir PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Reduce el tamaño de tus archivos PDF sin perder calidad.</p>
+</div>
+<!-- Card 4 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-brand-pink mb-4"><span class="material-symbols-outlined text-xl">image</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">PDF a JPG</h3>
+<p class="text-xs leading-relaxed text-gray-400">Convierte páginas de PDF en imágenes JPG de alta calidad.</p>
+</div>
+<!-- Card 5 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-brand-teal mb-4"><span class="material-symbols-outlined text-xl">picture_as_pdf</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">JPG a PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Crea documentos PDF a partir de imágenes JPG.</p>
+</div>
+<!-- Card 6 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-brand-pink mb-4"><span class="material-symbols-outlined text-xl">edit</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Editar PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Añade texto, imágenes y formas a tus documentos PDF.</p>
+</div>
+<!-- Card 7 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-brand-teal mb-4"><span class="material-symbols-outlined text-xl">lock</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Proteger PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Añade contraseñas y cifrado a tus archivos PDF.</p>
+</div>
+<!-- Card 8 -->
+<div class="tool-card bg-white p-6 rounded-2xl border border-gray-100 flex flex-col h-full">
+<div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-brand-pink mb-4"><span class="material-symbols-outlined text-xl">lock_open</span></div>
+<h3 class="text-lg font-bold text-nav-dark mb-2">Desbloquear PDF</h3>
+<p class="text-xs leading-relaxed text-gray-400">Elimina contraseñas y restricciones de archivos PDF.</p>
+</div>
+<!-- More cards can be added here following the same pattern -->
+</div>
+</section>
+<!-- END: ToolGrid -->
+<!-- BEGIN: HowItWorks -->
+<section class="bg-nav-dark text-white overflow-hidden py-24">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl font-bold text-center mb-16">Cómo funciona NavajaGT</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Step 1 -->
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-brand-teal rounded-lg flex items-center justify-center text-xl">
+              ☁️
+            </div>
+<div>
+<h4 class="text-lg font-semibold mb-2">1. Sube tu archivo</h4>
+<p class="text-gray-400 text-sm">Sube un archivo desde tu dispositivo o servicios en la nube.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-brand-pink rounded-lg flex items-center justify-center text-xl">
+              ⚙️
+            </div>
+<div>
+<h4 class="text-lg font-semibold mb-2">2. Selecciona la herramienta</h4>
+<p class="text-gray-400 text-sm">Elige la herramienta que necesites y ajusta los parámetros.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-brand-teal rounded-lg flex items-center justify-center text-xl">
+              📥
+            </div>
+<div>
+<h4 class="text-lg font-semibold mb-2">3. Descarga el resultado</h4>
+<p class="text-gray-400 text-sm">Descarga tu archivo procesado de forma inmediata y segura.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HowItWorks -->
+<!-- BEGIN: PremiumSection -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+<div class="bg-premium-mint rounded-3xl p-8 md:p-12">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+<div>
+<h2 class="text-3xl font-bold text-nav-dark mb-6">Descubre NavajaGT Premium</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 mb-8">
+<div class="flex items-center gap-2 text-slate-700">
+<span class="text-brand-teal text-xl">✓</span>
+<span>Sin límites de tamaño</span>
+</div>
+<div class="flex items-center gap-2 text-slate-700">
+<span class="text-brand-teal text-xl">✓</span>
+<span>Sin límites de archivos</span>
+</div>
+<div class="flex items-center gap-2 text-slate-700">
+<span class="text-brand-teal text-xl">✓</span>
+<span>Procesamiento por lotes</span>
+</div>
+<div class="flex items-center gap-2 text-slate-700">
+<span class="text-brand-teal text-xl">✓</span>
+<span>Soporte prioritario</span>
+</div>
+<div class="flex items-center gap-2 text-slate-700">
+<span class="text-brand-teal text-xl">✓</span>
+<span>Sin anuncios</span>
+</div>
+</div>
+<button class="bg-brand-pink text-white px-8 py-3 rounded-lg font-bold hover:bg-pink-500 transition-colors">
+              Actualizar a Premium
+            </button>
+</div>
+<div class="hidden lg:block">
+<!-- Decorative element or image placeholder -->
+<div class="w-full h-48 bg-teal-100 rounded-2xl flex items-center justify-center border-4 border-white">
+<img alt="Premium Promo" class="rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVSrFjxDH5aZ7LWIXDjDyTJteAVf-kEr7R-uJ0Pvw1ThzBAlTy_By4uFpO5o9UefPPd3NM8qHKWXV0sjAPqc3Ozw-qFGmvWhjZr87K4M5_F6y0u2F7cjYmoL9kAnySwq0alOhrYZRMTEu4kreEbM4uPTx73j_-2kf4qFTv3J9vRrUhdpH1CQbM3gkaikxcW_FU6AHjunVMLNWdS9_FJHfWFcx_piWWL6uELBeiKEX2q8FID7S_vMiiecwNX_mQLkfNng0TzaJz5A"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PremiumSection -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="bg-nav-dark text-white pt-16 pb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+<!-- Column 1 -->
+<div data-purpose="footer-column">
+<h5 class="text-sm font-bold mb-4 uppercase tracking-wider">Producto</h5>
+<ul class="space-y-2 text-sm text-gray-400">
+<li><a class="hover:text-brand-teal" href="#">Inicio</a></li>
+<li><a class="hover:text-brand-teal" href="#">Funciones</a></li>
+<li><a class="hover:text-brand-teal" href="#">Precios</a></li>
+<li><a class="hover:text-brand-teal" href="#">Empresas</a></li>
+</ul>
+</div>
+<!-- Column 2 -->
+<div data-purpose="footer-column">
+<h5 class="text-sm font-bold mb-4 uppercase tracking-wider">Soluciones</h5>
+<ul class="space-y-2 text-sm text-gray-400">
+<li><a class="hover:text-brand-teal" href="#">PDF a Word</a></li>
+<li><a class="hover:text-brand-teal" href="#">PDF a Imagen</a></li>
+<li><a class="hover:text-brand-teal" href="#">Editar Documentos</a></li>
+<li><a class="hover:text-brand-teal" href="#">Seguridad Digital</a></li>
+</ul>
+</div>
+<!-- Column 3 -->
+<div data-purpose="footer-column">
+<h5 class="text-sm font-bold mb-4 uppercase tracking-wider">Recursos</h5>
+<ul class="space-y-2 text-sm text-gray-400">
+<li><a class="hover:text-brand-teal" href="#">Centro de Ayuda</a></li>
+<li><a class="hover:text-brand-teal" href="#">Blog</a></li>
+<li><a class="hover:text-brand-teal" href="#">Comunidad</a></li>
+<li><a class="hover:text-brand-teal" href="#">Desarrolladores</a></li>
+</ul>
+</div>
+<!-- Column 4 -->
+<div data-purpose="footer-column">
+<h5 class="text-sm font-bold mb-4 uppercase tracking-wider">Legal</h5>
+<ul class="space-y-2 text-sm text-gray-400">
+<li><a class="hover:text-brand-teal" href="#">Privacidad</a></li>
+<li><a class="hover:text-brand-teal" href="#">Términos</a></li>
+<li><a class="hover:text-brand-teal" href="#">Cookies</a></li>
+<li><a class="hover:text-brand-teal" href="#">Aviso Legal</a></li>
+</ul>
+</div>
+<!-- Column 5 -->
+<div data-purpose="footer-column">
+<h5 class="text-sm font-bold mb-4 uppercase tracking-wider">Contacto</h5>
+<ul class="space-y-2 text-sm text-gray-400">
+<li><a class="hover:text-brand-teal" href="#">Soporte</a></li>
+<li><a class="hover:text-brand-teal" href="#">Ventas</a></li>
+<li class="flex gap-4 pt-4"><a class="text-white hover:text-brand-teal" href="#"><span class="material-symbols-outlined text-lg">facebook</span></a><a class="text-white hover:text-brand-teal" href="#"><span class="material-symbols-outlined text-lg">flutter_dash</span></a><a class="text-white hover:text-brand-teal" href="#"><span class="material-symbols-outlined text-lg">photo_camera</span></a><a class="text-white hover:text-brand-teal" href="#"><span class="material-symbols-outlined text-lg">play_arrow</span></a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+<p>© 2024 NavajaGT. Todos los derechos reservados.</p>
+<div class="flex space-x-4 mt-4 md:mt-0">
+<a class="hover:text-white" href="#">Mapa del sitio</a>
+<a class="hover:text-white" href="#">Accesibilidad</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

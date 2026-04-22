@@ -29,7 +29,7 @@ export function PublicNavbar() {
         {!isMounted ? (
           <div className="h-10 w-32 animate-pulse rounded-full bg-slate-200" />
         ) : !isLoggedIn ? (
-          <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-3" aria-label="Navegación principal">
             <Link
               href="/login"
               className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
@@ -42,7 +42,7 @@ export function PublicNavbar() {
             >
               Registro
             </Link>
-          </div>
+          </nav>
         ) : (
           <div className="flex items-center gap-3">
             <Link
