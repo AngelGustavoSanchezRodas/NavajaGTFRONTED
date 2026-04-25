@@ -20,7 +20,7 @@ async function getBiolinkData(alias: string): Promise<EnlaceResponse | null> {
     if (data.tipo !== 'BIOLINK') return null;
 
     return data;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
