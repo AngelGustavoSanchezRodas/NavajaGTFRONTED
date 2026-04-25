@@ -1,14 +1,17 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/modules/auth/services/auth.service";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -16,8 +19,15 @@ export function LoginForm() {
 
     try {
       await authService.login(email, password);
-      toast.success("Inicio de sesión exitoso");
-      window.location.href = "/dashboard";
+      toast.success("¡Bienvenido de nuevo!");
+      
+      setIsRedirecting(true);
+      
+      // Pequeño retardo para UX antes de redirigir
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 800);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No se pudo iniciar sesión";
@@ -39,8 +49,9 @@ export function LoginForm() {
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            disabled={isLoading || isRedirecting}
             required
-            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40"
+            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40 disabled:opacity-50"
             placeholder="tu@correo.com"
           />
         </div>
@@ -58,18 +69,19 @@ export function LoginForm() {
             autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            disabled={isLoading || isRedirecting}
             required
-            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40"
+            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40 disabled:opacity-50"
             placeholder="••••••••"
           />
         </div>
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isRedirecting}
           className="w-full rounded-full bg-brand-turquoise px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading ? "Ingresando..." : "Entrar"}
+          {isRedirecting ? "Redirigiendo..." : isLoading ? "Ingresando..." : "Entrar"}
         </button>
       </form>
     </GlassCard>

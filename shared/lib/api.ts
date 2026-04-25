@@ -2,11 +2,16 @@ import Cookies from 'js-cookie';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+export interface ApiOptions extends RequestInit {
+  responseType?: 'json' | 'blob';
+}
+
+export async function apiFetch<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   if (!API_BASE_URL) {
     throw new Error('La variable de entorno NEXT_PUBLIC_API_URL no está definida');
   }
 
+  const { responseType = 'json', ...fetchOptions } = options;
   const token = Cookies.get('token');
 
   const defaultHeaders: Record<string, string> = {
@@ -18,20 +23,24 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
   }
 
   const config: RequestInit = {
-    ...options,
+    ...fetchOptions,
     headers: {
       ...defaultHeaders,
-      ...options.headers,
+      ...fetchOptions.headers,
     },
   };
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  const data = await response.json().catch(() => ({}));
-
   if (!response.ok) {
-    throw new Error(data?.message || 'Error en la comunicación con el servidor');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.message || 'Error en la comunicación con el servidor');
   }
 
-  return data as T;
+  if (responseType === 'blob') {
+    const blob = await response.blob();
+    return blob as unknown as T;
+  }
+
+  return await response.json();
 }

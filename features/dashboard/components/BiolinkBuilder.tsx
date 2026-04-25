@@ -44,10 +44,10 @@ const BiolinkBuilder: React.FC = () => {
     setIsSaving(true);
     setStatus(null);
     try {
-      await apiFetch('/api/v1/core/enlaces', {
+      await apiFetch('/api/core/links/create/', {
         method: 'POST',
         body: JSON.stringify({
-          aliasPersonalizado: aliasPersonalizado || null,
+          alias: aliasPersonalizado || null,
           tipo: 'BIOLINK',
           metadata: metadata
         })

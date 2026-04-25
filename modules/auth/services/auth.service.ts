@@ -13,7 +13,7 @@ class AuthService {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, contrasena: password }),
     });
 
     const data = await response.json();
@@ -35,7 +35,7 @@ class AuthService {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ nombre, email, password }),
+      body: JSON.stringify({ nombre, email, contrasena: password }),
     });
 
     const data = await response.json();
