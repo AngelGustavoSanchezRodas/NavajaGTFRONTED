@@ -40,23 +40,30 @@ async function getBiolinkData(alias: string): Promise<EnlaceResponse | null> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getBiolinkData(params.alias);
 
-  if (!data) return {};
+  if (!data) {
+    return {
+      title: 'Biolink no encontrado',
+      description: 'El perfil solicitado no existe o no está disponible.',
+    };
+  }
 
   const { titulo, descripcion, avatarUrl } = data.metadata;
+  const defaultTitle = titulo || 'Biolink Profile';
+  const defaultDesc = descripcion || 'Visita mi perfil de Biolink';
 
   return {
-    title: titulo,
-    description: descripcion,
+    title: defaultTitle,
+    description: defaultDesc,
     openGraph: {
-      title: titulo,
-      description: descripcion,
-      images: [avatarUrl],
+      title: defaultTitle,
+      description: defaultDesc,
+      images: avatarUrl ? [avatarUrl] : [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: titulo,
-      description: descripcion,
-      images: [avatarUrl],
+      title: defaultTitle,
+      description: defaultDesc,
+      images: avatarUrl ? [avatarUrl] : [],
     },
   };
 }

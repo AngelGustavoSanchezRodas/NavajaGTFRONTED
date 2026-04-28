@@ -33,6 +33,13 @@ export async function apiFetch<T>(endpoint: string, options: ApiOptions = {}): P
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (!response.ok) {
+    if (response.status === 401) {
+      Cookies.remove('token');
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login?expired=true';
+      }
+    }
+
     const errorData = await response.json().catch(() => ({}));
     const error = new Error(errorData?.message || 'Error en la comunicación con el servidor') as Error & { status?: number };
     error.status = response.status;

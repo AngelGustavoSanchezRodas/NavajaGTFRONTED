@@ -7,11 +7,24 @@ import { apiFetch } from '@/shared/lib/api';
 import Image from 'next/image';
 import { Save, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const BiolinkBuilder: React.FC = () => {
   const [metadata, setMetadata] = useState<MetadataBiolink>(DEFAULT_BIOLINK_TEMPLATE);
   const [aliasPersonalizado, setAliasPersonalizado] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  
+  const debouncedMetadata = useDebounce(metadata, 300);
 
   const handleProfileChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,7 +75,7 @@ const BiolinkBuilder: React.FC = () => {
     }
   };
 
-  const isDark = metadata.tema === 'DARK';
+  const isDarkPreview = debouncedMetadata.tema === 'DARK';
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 max-w-7xl mx-auto min-h-screen bg-zinc-50/50">
@@ -235,38 +248,38 @@ const BiolinkBuilder: React.FC = () => {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-b-2xl z-20"></div>
             
             <div className={`h-full overflow-y-auto pt-12 pb-8 px-6 transition-colors duration-300 ${
-              isDark ? 'bg-zinc-950 text-white' : 'bg-zinc-50 text-zinc-900'
+              isDarkPreview ? 'bg-zinc-950 text-white' : 'bg-zinc-50 text-zinc-900'
             }`}>
               <div className="flex flex-col items-center text-center space-y-4">
-                {metadata.avatarUrl && (
+                {debouncedMetadata.avatarUrl && (
                   <Image
-                    src={metadata.avatarUrl}
+                    src={debouncedMetadata.avatarUrl}
                     alt="Preview Avatar"
                     width={80}
                     height={80}
                     className="rounded-full object-cover border-2 shadow-md"
-                    style={{ borderColor: metadata.colorPrincipal }}
+                    style={{ borderColor: debouncedMetadata.colorPrincipal }}
                     unoptimized
                   />
                 )}
                 <div className="space-y-1">
-                  <h4 className="font-bold text-lg leading-tight">{metadata.titulo || 'Tu Título'}</h4>
-                  <p className={`text-xs opacity-70 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                    {metadata.descripcion || 'Añade una descripción'}
+                  <h4 className="font-bold text-lg leading-tight">{debouncedMetadata.titulo || 'Tu Título'}</h4>
+                  <p className={`text-xs opacity-70 ${isDarkPreview ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                    {debouncedMetadata.descripcion || 'Añade una descripción'}
                   </p>
                 </div>
               </div>
 
               <div className="mt-8 space-y-3">
-                {metadata.enlaces.map((link) => (
+                {debouncedMetadata.enlaces.map((link) => (
                   <div
                     key={link.id}
                     className={`w-full py-3 px-4 rounded-xl text-center text-xs font-semibold shadow-sm border transition-all ${
-                      isDark 
+                      isDarkPreview 
                         ? 'bg-zinc-900 border-zinc-800 text-white' 
                         : 'bg-white border-zinc-200 text-zinc-900'
                     }`}
-                    style={{ borderLeft: `4px solid ${metadata.colorPrincipal}` }}
+                    style={{ borderLeft: `4px solid ${debouncedMetadata.colorPrincipal}` }}
                   >
                     {link.titulo || 'Enlace sin título'}
                   </div>
