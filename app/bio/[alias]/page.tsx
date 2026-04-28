@@ -8,7 +8,7 @@ interface Props {
   params: { alias: string };
 }
 
-async function getBiolinkData(alias: string) {
+async function getBiolinkData(alias: string): Promise<EnlaceResponse | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/enlaces/bio/${alias}`, {
       cache: 'no-store',
@@ -16,7 +16,7 @@ async function getBiolinkData(alias: string) {
 
     if (!res.ok) return null;
 
-    const data = await res.json();
+    const data = await res.json() as EnlaceResponse;
 
     if (data.tipo !== 'BIOLINK') return null;
     if (!data.metadata) return null;

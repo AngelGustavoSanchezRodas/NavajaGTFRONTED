@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, ChangeEvent } from 'react';
-import { MetadataBiolink, EnlaceItem } from '@/types/biolink';
+import { MetadataBiolink, EnlaceItem, BiolinkFlatData } from '@/types/biolink';
 import { DEFAULT_BIOLINK_TEMPLATE } from '@/shared/constants/biolink-templates';
 import { apiFetch } from '@/shared/lib/api';
 import Image from 'next/image';
-import { Save, Loader2, CheckCircle, AlertCircle, Copy, Check, ExternalLink } from 'lucide-react';
+import { Save, Loader2, CheckCircle, AlertCircle, Copy, Check, ExternalLink, Eye, Smartphone } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { ProUpgradeModal } from '@/shared/components/ui/ProUpgradeModal';
 
@@ -21,7 +22,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 const BiolinkBuilder: React.FC = () => {
-  const [metadata, setMetadata] = useState<MetadataBiolink>(DEFAULT_BIOLINK_TEMPLATE);
+  const [metadata, setMetadata] = useState<BiolinkFlatData>(DEFAULT_BIOLINK_TEMPLATE);
   const [aliasPersonalizado, setAliasPersonalizado] = useState('');
   const [view, setView] = useState<'editing' | 'saving' | 'success' | 'upgrade'>('editing');
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
@@ -90,6 +91,7 @@ const BiolinkBuilder: React.FC = () => {
       });
       setPublishedUrl(respuesta.alias || aliasPersonalizado);
       setView('success');
+      toast.success("¡Tu Biolink se ha guardado correctamente!");
     } catch (error: unknown) {
       const apiError = error as { status?: number; message?: string };
       if (apiError.status === 402 || apiError.status === 403) {
@@ -101,6 +103,7 @@ const BiolinkBuilder: React.FC = () => {
       } else {
         setGlobalError(apiError.message || 'Error al guardar el Biolink');
         setView('editing');
+        toast.error(apiError.message || 'No se pudo guardar el Biolink');
       }
     }
   };
@@ -110,6 +113,7 @@ const BiolinkBuilder: React.FC = () => {
       const url = `${window.location.origin}/bio/${publishedUrl}`;
       navigator.clipboard.writeText(url);
       setIsCopied(true);
+      toast.success("Enlace copiado");
       setTimeout(() => setIsCopied(false), 2000);
     }
   };
@@ -183,38 +187,26 @@ const BiolinkBuilder: React.FC = () => {
                       type="text"
                       value={aliasPersonalizado}
                       onChange={(e) => setAliasPersonalizado(e.target.value)}
-                      className={`flex-1 px-4 py-2 border ${aliasError ? 'border-red-500' : 'border-zinc-300'} rounded-r-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all`}
+                      className={`flex-1 px-4 py-3 border ${aliasError ? 'border-red-500' : 'border-zinc-300'} rounded-r-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-base`}
                       placeholder="mi-marca"
                     />
                   </div>
-                  {aliasError && <p className="text-xs text-red-500 font-semibold mt-1">Este alias ya está en uso. Intenta con otro.</p>}
+                  {aliasError && <p className=\"text-xs text-red-500 font-semibold mt-1\">Este alias ya está en uso. Intenta con otro.</p>}
                 </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Título</label>
+            <div className=\"space-y-2\">
+              <label className=\"text-xs font-bold uppercase tracking-wider text-zinc-500\">Título</label>
               <input
-                type="text"
-                name="titulo"
-                value={metadata.titulo}
-                onChange={handleProfileChange}
-                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
-                placeholder="Ej. Juan Pérez"
+                type=\"text\"
+                 name=\"titulo\"
+                 value={metadata.titulo}
+                 onChange={handleProfileChange}
+                 className=\"w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-base\"
+                 placeholder=\"Ej. Juan Pérez\"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descripción</label>
+            <div className=\"space-y-2\">
+              <label className=\"text-xs font-bold uppercase tracking-wider text-zinc-500\">Descripción</label>
               <textarea
-                name="descripcion"
-                value={metadata.descripcion}
-                onChange={handleProfileChange}
-                rows={3}
-                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
-                placeholder="Cuéntales sobre ti..."
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Avatar URL</label>
               <input
                 type="text"
@@ -311,8 +303,8 @@ const BiolinkBuilder: React.FC = () => {
         )}
       </section>
 
-      {/* Columna Derecha: Preview */}
-      <section className="flex items-start justify-center pt-10">
+      {/* Columna Derecha: Preview - Hidden on mobile by default, shown in a sticky container on large screens */}
+      <section className="hidden lg:flex items-start justify-center pt-10">
         <div className="sticky top-10">
           <div className="text-center mb-6">
             <span className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-widest">

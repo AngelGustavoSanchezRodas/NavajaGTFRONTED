@@ -2,6 +2,7 @@
 
 import { FormEvent, useState, useRef } from "react";
 import { Link, Loader2, QrCode, Copy, Check, ExternalLink, Settings2, RefreshCcw, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
 import { apiFetch } from "@/shared/lib/api";
@@ -45,6 +46,7 @@ export function UrlShortenerTool() {
       });
       
       setSuccessAlias(response.alias);
+      toast.success("¡Enlace acortado con éxito!");
     } catch (err: unknown) {
       const apiError = err as { status?: number; message?: string };
       if (apiError.status === 402 || apiError.status === 403) {
@@ -54,6 +56,7 @@ export function UrlShortenerTool() {
         setError("El alias ya está en uso o es inválido");
       } else {
         setError(apiError.message || "Ocurrió un error inesperado");
+        toast.error(apiError.message || "Error al acortar el enlace");
       }
     } finally {
       setLoading(false);
@@ -81,6 +84,7 @@ export function UrlShortenerTool() {
     if (shortUrl) {
       navigator.clipboard.writeText(shortUrl);
       setCopied(true);
+      toast.success("¡Copiado al portapapeles!");
       setTimeout(() => setCopied(false), 2000);
     }
   };

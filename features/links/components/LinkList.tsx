@@ -1,0 +1,132 @@
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import { 
+  Link as LinkIcon, 
+  ExternalLink, 
+  Copy, 
+  Check, 
+  MoreVertical, 
+  BarChart3, 
+  Calendar,
+  Globe,
+  Trash2,
+  Edit2
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { apiFetch } from '@/shared/lib/api';
+import { EnlaceResponse } from '@/types/biolink';
+import { EmptyState } from '@/shared/components/ui/EmptyState';
+import { GlassCard } from '@/shared/components/ui/GlassCard';
+import { cn } from '@/shared/lib/utils';
+
+export function LinkList() {
+  const [links, setLinks] = useState<EnlaceResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLinks = async () => {
+      try {
+        // Assuming this endpoint exists based on backend context
+        const data = await apiFetch<EnlaceResponse[]>('/api/core/links/');
+        setLinks(data);
+      } catch (error) {
+        console.error("Error fetching links:", error);
+        // Fallback or empty state
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLinks();
+  }, []);
+
+  const copyToClipboard = (alias: string, id: string) => {
+    const appUrl = window.location.origin;
+    const url = `${appUrl}/${alias}`;
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    toast.success("¡Enlace copiado!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-48 bg-slate-100 rounded-[2.5rem]" />
+        ))}
+      </div>
+    );
+  }
+
+  if (links.length === 0) {
+    return (
+      <EmptyState
+        icon={LinkIcon}
+        title="No tienes enlaces todavía"
+        description="Empieza creando un enlace corto o un Biolink para ver tus estadísticas aquí."
+        actionLabel="Crear mi primer enlace"
+        onAction={() => window.location.href = '/dashboard'}
+      />
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {links.map((link) => (
+        <GlassCard 
+          key={link.id} 
+          className="group p-6 rounded-[2.5rem] border border-slate-200/60 hover:border-brand-turquoise/30 transition-all duration-300 flex flex-col gap-4"
+        >
+          <div className="flex items-start justify-between">
+            <div className={cn(
+              "p-3 rounded-2xl",
+              link.tipo === 'BIOLINK' ? "bg-brand-magenta/10 text-brand-magenta" : "bg-brand-turquoise/10 text-brand-turquoise"
+            )}>
+              {link.tipo === 'BIOLINK' ? <Globe size={20} /> : <LinkIcon size={20} />}
+            </div>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => copyToClipboard(link.alias, link.id)}
+                className="p-2 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-50"
+              >
+                {copiedId === link.id ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+              <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50">
+                <MoreVertical size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="font-black text-slate-900 text-lg tracking-tight truncate pr-4">
+              {link.tipo === 'BIOLINK' ? `/${link.alias}` : link.alias}
+            </h4>
+            <p className="text-xs font-medium text-slate-400 truncate break-all">
+              {link.urlOriginal || 'Perfil Biolink'}
+            </p>
+          </div>
+
+          <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-slate-500 font-bold text-xs">
+                <BarChart3 size={14} className="text-slate-400" />
+                {link.clicks} <span className="font-medium text-slate-400">clics</span>
+              </div>
+            </div>
+            <a 
+              href={`/${link.alias}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-2 bg-slate-50 text-slate-400 hover:text-brand-turquoise rounded-xl transition-all hover:bg-brand-turquoise/5"
+            >
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  );
+}

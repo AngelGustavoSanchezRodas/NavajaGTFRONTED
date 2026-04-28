@@ -1,6 +1,6 @@
-import { MetadataBiolink } from '@/types/biolink';
+import { BiolinkFlatData } from '@/types/biolink';
 
-export const DEFAULT_BIOLINK_TEMPLATE: MetadataBiolink = {
+export const DEFAULT_BIOLINK_TEMPLATE: BiolinkFlatData = {
   titulo: 'Mi Biolink',
   descripcion: 'Bienvenido a mi perfil dinámico',
   avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',

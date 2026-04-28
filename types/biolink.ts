@@ -24,7 +24,13 @@ export interface PerfilBiolink {
   colorPrincipal: string;
 }
 
-export interface MetadataBiolink extends PerfilBiolink {
+export interface BiolinkFlatData extends PerfilBiolink {
+  enlaces: EnlaceItem[];
+  redesSociales: RedesSociales;
+}
+
+export interface MetadataBiolink {
+  perfil: PerfilBiolink;
   enlaces: EnlaceItem[];
   redesSociales: RedesSociales;
 }

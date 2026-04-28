@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { authService } from "@/modules/auth/services/auth.service";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 
 export function RegisterForm() {
@@ -49,7 +50,7 @@ export function RegisterForm() {
             value={nombre}
             onChange={(event) => setNombre(event.target.value)}
             required
-            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40"
+            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40 text-base"
             placeholder="Tu nombre"
           />
         </div>
@@ -65,7 +66,7 @@ export function RegisterForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40"
+            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40 text-base"
             placeholder="tu@correo.com"
           />
         </div>
@@ -84,7 +85,7 @@ export function RegisterForm() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
-            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40"
+            className="w-full rounded-xl border border-slate-200/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/40 text-base"
             placeholder="••••••••"
           />
         </div>
@@ -92,8 +93,9 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-brand-turquoise px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full flex items-center justify-center gap-2 rounded-full bg-brand-turquoise px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
+          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isLoading ? "Creando cuenta..." : "Crear cuenta"}
         </button>
       </form>

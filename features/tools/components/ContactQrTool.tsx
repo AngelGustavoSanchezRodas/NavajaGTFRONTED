@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui/GlassCard';
 import { QrCode, Link as LinkIcon, Phone, Mail, ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { toast } from 'sonner';
 
 type QrType = 'url' | 'tel' | 'email';
 
@@ -23,6 +24,7 @@ export const ContactQrTool: React.FC = () => {
     const encodedValue = encodeURIComponent(finalValue);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
     setQrUrl(`${apiUrl}/api/v1/tools/qr?url=${encodedValue}`);
+    toast.success("¡Código QR generado!");
   };
 
   return (
@@ -68,7 +70,7 @@ export const ContactQrTool: React.FC = () => {
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder={type === 'url' ? 'https://ejemplo.com' : type === 'tel' ? '+34 600 000 000' : 'hola@ejemplo.com'}
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-2xl outline-none transition-all text-slate-900 font-medium"
+              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-2xl outline-none transition-all text-slate-900 font-medium text-base"
             />
           </div>
         </div>
