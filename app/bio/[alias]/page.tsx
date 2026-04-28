@@ -8,27 +8,17 @@ interface Props {
   params: { alias: string };
 }
 
-async function getBiolinkData(alias: string): Promise<EnlaceResponse | null> {
+async function getBiolinkData(alias: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/links/bio/${alias}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/bio/${alias}`, {
       cache: 'no-store',
     });
 
     if (!res.ok) return null;
 
-    const data: EnlaceResponse = await res.json();
+    const data = await res.json();
 
     if (data.tipo !== 'BIOLINK') return null;
-
-    if (data.urlOriginal) {
-      try {
-        data.metadata = JSON.parse(data.urlOriginal);
-      } catch (e) {
-        console.error("Error parsing metadata from urlOriginal", e);
-        return null;
-      }
-    }
-
     if (!data.metadata) return null;
 
     return data;
@@ -47,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const { titulo, descripcion, avatarUrl } = data.metadata;
+  const { titulo, descripcion, avatarUrl } = data.metadata.perfil || {};
   const defaultTitle = titulo || 'Biolink Profile';
   const defaultDesc = descripcion || 'Visita mi perfil de Biolink';
 
@@ -75,7 +65,8 @@ export default async function BioPage({ params }: Props) {
     notFound();
   }
 
-  const { titulo, descripcion, avatarUrl, tema, colorPrincipal, enlaces } = data.metadata;
+  const { perfil, enlaces } = data.metadata;
+  const { titulo, descripcion, avatarUrl, tema, colorPrincipal } = perfil || {};
 
   const isDark = tema === 'DARK';
 

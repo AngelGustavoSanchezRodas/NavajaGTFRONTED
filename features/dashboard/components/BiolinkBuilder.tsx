@@ -5,7 +5,9 @@ import { MetadataBiolink, EnlaceItem } from '@/types/biolink';
 import { DEFAULT_BIOLINK_TEMPLATE } from '@/shared/constants/biolink-templates';
 import { apiFetch } from '@/shared/lib/api';
 import Image from 'next/image';
-import { Save, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Save, Loader2, CheckCircle, AlertCircle, Copy, Check } from 'lucide-react';
+import { useAuth } from '@/shared/contexts/AuthContext';
+import { ProUpgradeModal } from '@/shared/components/ui/ProUpgradeModal';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -23,6 +25,12 @@ const BiolinkBuilder: React.FC = () => {
   const [aliasPersonalizado, setAliasPersonalizado] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState<string | undefined>();
+  const [copied, setCopied] = useState(false);
+  const [aliasError, setAliasError] = useState(false);
+  
+  const { plan } = useAuth();
   
   const debouncedMetadata = useDebounce(metadata, 300);
 
@@ -57,21 +65,52 @@ const BiolinkBuilder: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     setStatus(null);
+    setAliasError(false);
+
+    const payloadMetadata = {
+      perfil: {
+        titulo: metadata.titulo,
+        descripcion: metadata.descripcion,
+        avatarUrl: metadata.avatarUrl,
+        tema: metadata.tema,
+        colorPrincipal: metadata.colorPrincipal
+      },
+      enlaces: metadata.enlaces,
+      redesSociales: metadata.redesSociales
+    };
+
     try {
       await apiFetch('/api/core/links/create/', {
         method: 'POST',
         body: JSON.stringify({
-          alias: aliasPersonalizado || null,
+          aliasPersonalizado: aliasPersonalizado || null,
           tipo: 'BIOLINK',
-          urlOriginal: JSON.stringify(metadata)
+          metadata: payloadMetadata
         })
       });
       setStatus({ type: 'success', message: '¡Biolink guardado con éxito!' });
-      setTimeout(() => setStatus(null), 5000);
-    } catch (error: any) {
-      setStatus({ type: 'error', message: error.message || 'Error al guardar el Biolink' });
+    } catch (error: unknown) {
+      const apiError = error as { status?: number; message?: string };
+      if (apiError.status === 402 || apiError.status === 403) {
+        setModalMessage(apiError.message || "Tu plan actual no permite realizar esta acción");
+        setIsModalOpen(true);
+      } else if (apiError.status === 409) {
+        setAliasError(true);
+        setStatus({ type: 'error', message: 'El alias ya está en uso. Intenta con otro.' });
+      } else {
+        setStatus({ type: 'error', message: apiError.message || 'Error al guardar el Biolink' });
+      }
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (aliasPersonalizado) {
+      const url = `${window.location.origin}/bio/${aliasPersonalizado}`;
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -96,7 +135,7 @@ const BiolinkBuilder: React.FC = () => {
                   type="text"
                   value={aliasPersonalizado}
                   onChange={(e) => setAliasPersonalizado(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-zinc-300 rounded-r-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  className={`flex-1 px-4 py-2 border ${aliasError ? 'border-red-500' : 'border-zinc-300'} rounded-r-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all`}
                   placeholder="mi-marca"
                 />
               </div>
@@ -196,23 +235,30 @@ const BiolinkBuilder: React.FC = () => {
         </div>
 
         {status && (
-          <div className={`p-4 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 ${
-            status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'
+          <div className={`p-6 rounded-2xl flex flex-col space-y-4 animate-in fade-in slide-in-from-top-2 shadow-sm ${
+            status.type === 'success' ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'
           }`}>
-            {status.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-            <div className="flex-1">
-              <span className="text-sm font-medium">{status.message}</span>
-              {status.type === 'success' && aliasPersonalizado && (
-                <a 
-                  href={`/bio/${aliasPersonalizado}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block mt-2 text-xs font-bold underline hover:text-emerald-800"
-                >
-                  Ver mi Biolink
-                </a>
-              )}
+            <div className="flex items-center space-x-3">
+              {status.type === 'success' ? <CheckCircle className="w-6 h-6 text-emerald-600" /> : <AlertCircle className="w-6 h-6" />}
+              <span className={`text-base font-bold ${status.type === 'success' ? 'text-emerald-900' : ''}`}>{status.message}</span>
             </div>
+            {status.type === 'success' && aliasPersonalizado && (
+              <div className="flex items-center gap-3 pt-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={`navaja.gt/bio/${aliasPersonalizado}`}
+                  className="flex-1 bg-white border border-emerald-100 outline-none text-sm font-bold text-slate-900 px-4 py-3 rounded-xl shadow-sm cursor-text"
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                />
+                <button
+                  onClick={copyToClipboard}
+                  className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 active:scale-90 transition-transform"
+                >
+                  {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -233,6 +279,11 @@ const BiolinkBuilder: React.FC = () => {
             </>
           )}
         </button>
+        <ProUpgradeModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          message={modalMessage} 
+        />
       </section>
 
       {/* Columna Derecha: Preview */}
