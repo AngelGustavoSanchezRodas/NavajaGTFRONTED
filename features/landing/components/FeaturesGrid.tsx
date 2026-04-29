@@ -1,7 +1,8 @@
 import NextLink from "next/link";
 import { 
   Link as LinkIcon,
-  Image as ImageIcon
+  Image as ImageIcon,
+  QrCode
 } from "lucide-react";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
 import { cn } from "@/shared/lib/utils";
@@ -33,6 +34,15 @@ const TOOLS = [
     color: "text-brand-turquoise",
     bgColor: "bg-brand-turquoise/10",
     href: "/herramientas/convertidor"
+  },
+  {
+    id: "qr",
+    title: "Generador QR Pro",
+    description: "Códigos QR multipropósito dinámicos y personalizables al instante.",
+    icon: QrCode,
+    color: "text-brand-mustard",
+    bgColor: "bg-brand-mustard/10",
+    href: "/herramientas/qr"
   }
 ];
 

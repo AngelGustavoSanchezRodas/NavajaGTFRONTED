@@ -46,6 +46,13 @@ export function PublicNavbar() {
         <BrandLogo />
 
         <div className="flex items-center gap-2 sm:gap-4">
+          <Link
+            href="/#pricing"
+            className="hidden md:flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-200 to-yellow-400 px-4 py-2 text-xs font-black uppercase tracking-wider text-amber-900 transition-all hover:shadow-lg hover:shadow-yellow-500/20 active:scale-95 border border-yellow-300"
+          >
+            <Sparkles size={14} className="animate-pulse" />
+            Upgrade PRO
+          </Link>
           <AnimatePresence mode="wait">
             {isMounted && isAuthenticated ? (
               <motion.div 
