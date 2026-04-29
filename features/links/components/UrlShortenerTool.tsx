@@ -69,7 +69,6 @@ export function UrlShortenerTool() {
     setAlias("");
     setSuccessAlias(null);
     setError(null);
-    setCopied(false);
   };
 
   const handleInputClick = () => {

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { ProUpgradeModal } from '@/shared/components/ui/ProUpgradeModal';
 import { useCopyToClipboard } from '@/shared/hooks/useCopyToClipboard';
+import { cn } from "@/shared/lib/utils";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -29,6 +30,7 @@ const BiolinkBuilder: React.FC = () => {
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [aliasError, setAliasError] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [modalMessage, setModalMessage] = useState<string | undefined>();
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const { copy, copied } = useCopyToClipboard();
   
