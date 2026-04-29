@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -9,14 +9,17 @@ import {
   Settings, 
   CreditCard, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
 import { authService } from "@/modules/auth/services/auth.service";
 import { cn } from "@/shared/lib/utils";
 import { BrandLogo } from "./BrandLogo";
+import { ProUpgradeModal } from "@/shared/components/ui/ProUpgradeModal";
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   const sections = [
     {
@@ -92,7 +95,15 @@ export function DashboardSidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-slate-100">
+      <div className="p-4 border-t border-slate-100 flex flex-col gap-2">
+        <button
+          onClick={() => setIsProModalOpen(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-200 to-yellow-400 px-4 py-3 text-sm font-black uppercase tracking-wider text-amber-900 transition-all hover:shadow-lg hover:shadow-yellow-500/20 active:scale-95 border border-yellow-300"
+        >
+          <Sparkles size={16} className="animate-pulse" />
+          Upgrade PRO
+        </button>
+
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 px-4 py-3 rounded-xl font-bold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
@@ -101,6 +112,12 @@ export function DashboardSidebar() {
           <span className="text-sm">Cerrar Sesión</span>
         </button>
       </div>
+
+      <ProUpgradeModal 
+        isOpen={isProModalOpen} 
+        onClose={() => setIsProModalOpen(false)} 
+        message="Actualiza a PRO para acceder a todas las funciones avanzadas."
+      />
     </aside>
   );
 }

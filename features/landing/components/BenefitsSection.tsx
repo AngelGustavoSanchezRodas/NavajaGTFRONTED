@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Upload, MousePointer2, Download } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -54,6 +55,15 @@ export function BenefitsSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-16 flex justify-center">
+          <Link 
+            href="/register" 
+            className="group flex items-center gap-2 rounded-full bg-brand-turquoise px-8 py-4 text-sm font-bold text-white transition-all hover:shadow-[0_8px_30px_rgb(45,212,191,0.3)] hover:-translate-y-1"
+          >
+            Comenzar gratis ahora
+          </Link>
         </div>
       </div>
     </section>

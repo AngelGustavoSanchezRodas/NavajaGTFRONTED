@@ -114,6 +114,19 @@ export function PublicNavbar() {
                         <div className="my-2 border-t border-slate-100" />
                         
                         <button
+                          onClick={() => {
+                            setIsProModalOpen(true);
+                            setIsDropdownOpen(false);
+                          }}
+                          className="group flex w-full md:hidden items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-amber-600 transition-all hover:bg-amber-50"
+                        >
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-500 transition-colors group-hover:bg-amber-100 group-hover:text-amber-600">
+                            <Sparkles size={18} />
+                          </div>
+                          Upgrade PRO
+                        </button>
+                        
+                        <button
                           onClick={handleLogout}
                           className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-red-500 transition-all hover:bg-red-50"
                         >
