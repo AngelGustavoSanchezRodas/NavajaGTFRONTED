@@ -37,7 +37,7 @@ export function UrlShortenerTool() {
     setSuccessAlias(null);
 
     try {
-      const response = await apiFetch<ShortenResponse>('/api/core/links/create/', {
+      const response = await apiFetch<ShortenResponse>('/api/core/links/create', {
         method: 'POST',
         body: JSON.stringify({ 
           urlOriginal: url, 
