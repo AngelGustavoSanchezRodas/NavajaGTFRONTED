@@ -21,7 +21,7 @@ export function UrlShortenerTool() {
   const [alias, setAlias] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successAlias, setSuccessAlias] = useState<string | null>(null);
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { copy, copied } = useCopyToClipboard();
@@ -34,10 +34,10 @@ export function UrlShortenerTool() {
     event.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccessAlias(null);
+    setShortUrl(null);
 
     try {
-      const response = await apiFetch<ShortenResponse>('/api/core/links/create/', {
+      const response = await apiFetch<any>('/api/core/links/create/', {
         method: 'POST',
         body: JSON.stringify({ 
           urlOriginal: url, 
@@ -46,7 +46,8 @@ export function UrlShortenerTool() {
         })
       });
       
-      setSuccessAlias(response.alias);
+      const codigo = response.codigoCorto || response.alias;
+      setShortUrl(`${window.location.origin}/${codigo}`);
       toast.success("¡Enlace acortado con éxito!");
     } catch (err: unknown) {
       const apiError = err as { status?: number; message?: string };
@@ -70,7 +71,7 @@ export function UrlShortenerTool() {
   const handleReset = () => {
     setUrl("");
     setAlias("");
-    setSuccessAlias(null);
+    setShortUrl(null);
     setError(null);
   };
 
@@ -80,19 +81,82 @@ export function UrlShortenerTool() {
     }
   };
 
-  const shortUrl = successAlias && typeof window !== 'undefined' ? `${window.location.origin}/${successAlias}` : '';
-
   const handleCopy = () => {
     if (shortUrl) {
       copy(shortUrl);
     }
   };
 
+  if (shortUrl) {
+    return (
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-xl mx-auto">
+        <GlassCard className="p-10 border-2 border-brand-turquoise/20 bg-gradient-to-b from-white to-brand-turquoise/5 rounded-[2.5rem] flex flex-col items-center text-center shadow-2xl shadow-brand-turquoise/10 relative overflow-hidden">
+          {/* Background elements */}
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-brand-turquoise/10 blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full bg-emerald-400/10 blur-2xl"></div>
+          
+          <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner relative z-10">
+            <Check className="w-8 h-8" />
+          </div>
+          
+          <h4 className="text-2xl font-black text-slate-900 mb-2 relative z-10">¡Link listo para compartir!</h4>
+          <p className="text-slate-500 font-medium mb-8 relative z-10">Tu enlace ha sido acortado y está listo para ser utilizado.</p>
+          
+          <div className="w-full relative z-10 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-8 flex flex-col gap-6">
+            <input
+              ref={resultInputRef}
+              type="text"
+              readOnly
+              value={shortUrl}
+              onClick={handleInputClick}
+              className="w-full bg-slate-50 border-none outline-none text-center text-2xl sm:text-3xl font-black text-brand-turquoise py-4 rounded-xl cursor-pointer"
+            />
+            
+            <button
+              onClick={handleCopy}
+              className="w-full py-5 bg-slate-900 hover:bg-black text-white rounded-2xl text-lg font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl shadow-slate-900/20"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-6 w-6" /> ¡COPIADO AL PORTAPAPELES!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-6 w-6" /> COPIAR ENLACE
+                </>
+              )}
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-4 relative z-10">
+            <a 
+              href={shortUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:text-brand-turquoise hover:border-brand-turquoise/30 transition-all shadow-sm"
+            >
+              <ExternalLink size={16} />
+              Probar Link
+            </a>
+            
+            <button 
+              onClick={handleReset}
+              className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:text-brand-turquoise hover:border-brand-turquoise/30 transition-all shadow-sm"
+            >
+              <RefreshCcw size={16} />
+              Crear Otro
+            </button>
+          </div>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-xl rounded-[2.5rem] bg-white border border-slate-200 p-6 sm:p-10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)]">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-2xl font-[950] text-slate-900 tracking-tight">Acortador Rápido</h3>
-        {successAlias && (
+        {shortUrl && (
           <button 
             onClick={handleReset}
             className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-brand-turquoise transition-colors"
@@ -104,8 +168,7 @@ export function UrlShortenerTool() {
       </div>
       <p className="text-sm font-medium text-slate-500 mb-8">Genera links rastreables y seguros en milisegundos.</p>
 
-      {!successAlias ? (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="relative flex items-center">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
               <Link className="h-4 w-4 text-slate-400" />
@@ -138,13 +201,7 @@ export function UrlShortenerTool() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div 
-                  className="relative flex items-center pt-1 pb-2"
-                  onClick={plan === 'FREE' ? () => {
-                    setModalMessage("Actualiza a PRO para usar alias personalizados");
-                    setIsModalOpen(true);
-                  } : undefined}
-                >
+                <div className="relative flex items-center pt-1 pb-2">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 pt-1">
                     <span className="text-sm font-bold text-slate-400 italic">@</span>
                   </div>
@@ -153,6 +210,12 @@ export function UrlShortenerTool() {
                     type="text"
                     value={alias}
                     onChange={(event) => { setAlias(event.target.value); setError(null); }}
+                    onFocus={plan === 'FREE' ? (e) => {
+                      e.preventDefault();
+                      e.target.blur();
+                      setModalMessage("Actualiza a PRO para usar alias personalizados");
+                      setIsModalOpen(true);
+                    } : undefined}
                     placeholder="Alias personalizado (opcional)"
                     disabled={plan === 'FREE'}
                     className={`h-16 w-full rounded-2xl border pl-12 pr-10 text-base outline-none transition-all font-medium ${
@@ -191,50 +254,6 @@ export function UrlShortenerTool() {
             )}
           </button>
         </form>
-      ) : (
-        <div className="animate-in fade-in zoom-in duration-500">
-          <div className="p-8 bg-emerald-50/50 border border-emerald-100 rounded-[2rem]">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">¡Link generado exitosamente!</p>
-              <a 
-                href={shortUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1.5 text-xs font-black"
-              >
-                Probar enlace <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <input
-                ref={resultInputRef}
-                type="text"
-                readOnly
-                value={shortUrl}
-                onClick={handleInputClick}
-                className="flex-1 bg-white border border-emerald-100 outline-none text-sm font-black text-slate-900 px-5 py-4 rounded-xl shadow-sm cursor-pointer"
-              />
-              <button
-                onClick={handleCopy}
-                className="p-4 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 active:scale-90 transition-transform"
-              >
-                {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
-              </button>
-            </div>
-            
-            <div className="mt-8 pt-8 border-t border-emerald-100 flex flex-col items-center">
-              <p className="text-xs font-bold text-slate-400 mb-4 tracking-wide uppercase">¿Necesitas acortar algo más?</p>
-              <button 
-                onClick={handleReset}
-                className="flex items-center gap-2 px-8 py-3.5 bg-white border border-slate-200 rounded-full text-sm font-black text-slate-700 hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
-              >
-                <RefreshCcw size={16} />
-                Acortar otro enlace
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {error && (
         <div className="mt-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm animate-in fade-in slide-in-from-top-2 font-bold text-center">

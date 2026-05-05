@@ -52,15 +52,26 @@ const QrCodeDisplay: React.FC<Props> = ({ text: initialText }) => {
 
       {text && (
         <GlassCard className="flex flex-col items-center justify-center space-y-6 p-8 bg-white/40 backdrop-blur-xl border border-white/20 animate-in fade-in zoom-in-95">
-          <div className="relative p-4 bg-white rounded-2xl shadow-inner border border-zinc-100">
+          <div className="group relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl bg-white p-2">
             <Image
               src={qrUrl}
               alt={`Código QR para ${text}`}
               width={192}
               height={192}
-              className="rounded-lg"
+              className="rounded-lg object-contain"
               unoptimized
             />
+            
+            {/* Overlay de Hover */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+              <button 
+                onClick={handleDownload}
+                className="flex items-center gap-2 bg-brand-turquoise text-white px-4 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:scale-105 text-sm"
+              >
+                <Download className="w-4 h-4" />
+                Descargar
+              </button>
+            </div>
           </div>
           
           <div className="text-center space-y-2">
@@ -69,14 +80,6 @@ const QrCodeDisplay: React.FC<Props> = ({ text: initialText }) => {
               {text}
             </p>
           </div>
-
-          <button
-            onClick={handleDownload}
-            className="w-full flex items-center justify-center space-x-2 py-3 px-6 bg-zinc-900 text-white rounded-xl font-bold hover:bg-zinc-800 transition-all transform active:scale-95 shadow-lg"
-          >
-            <Download className="w-5 h-5" />
-            <span>Descargar PNG</span>
-          </button>
         </GlassCard>
       )}
     </div>

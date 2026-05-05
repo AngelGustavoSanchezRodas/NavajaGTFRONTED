@@ -1,139 +1,386 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GlassCard } from '@/shared/components/ui/GlassCard';
-import { QrCode, Link as LinkIcon, Phone, Mail, ArrowRight, Loader2, Download } from 'lucide-react';
+import { 
+  QrCode, 
+  Link as LinkIcon, 
+  Phone, 
+  Mail, 
+  ArrowRight, 
+  Loader2, 
+  Download, 
+  MessageSquare,
+  Palette,
+  CheckCircle2
+} from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { toast } from 'sonner';
-import { apiFetch } from '@/shared/lib/api';
+import Cookies from 'js-cookie';
+import { useAuth } from '@/shared/contexts/AuthContext';
+import { ProUpgradeModal } from '@/shared/components/ui/ProUpgradeModal';
 
-type QrType = 'url' | 'tel' | 'email';
+type QrType = 'LINK' | 'WHATSAPP' | 'TELEFONO' | 'EMAIL';
 
 export const ContactQrTool: React.FC = () => {
-  const [type, setType] = useState<QrType>('url');
-  const [value, setValue] = useState('');
+  const { plan } = useAuth();
+  const [type, setType] = useState<QrType>('LINK');
+  const [formData, setFormData] = useState({
+    url: '',
+    whatsappPhone: '',
+    whatsappMessage: '',
+    tel: '',
+    emailAddress: '',
+    emailSubject: ''
+  });
+  
+  const [foregroundColor, setForegroundColor] = useState('#000000');
+  const [backgroundColor, setBackgroundColor] = useState('#FFFFFF');
   const [qrUrl, setQrUrl] = useState<string | null>(null);
-
   const [loading, setLoading] = useState(false);
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
-  // Clean up object URLs to prevent memory leaks
-  React.useEffect(() => {
+  const tipoMapa: Record<string, string> = {
+    'LINK': 'URL',
+    'TELEFONO': 'PHONE',
+    'WHATSAPP': 'WHATSAPP',
+    'EMAIL': 'EMAIL'
+  };
+
+  const formatHex = (hex: string) => {
+    if (!hex.startsWith('#')) hex = '#' + hex;
+    if (hex.length === 4) {
+      return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+    }
+    return hex.padEnd(7, '0').slice(0, 7);
+  };
+
+  // Limpieza de URLs de objeto para evitar fugas de memoria
+  useEffect(() => {
     return () => {
       if (qrUrl) URL.revokeObjectURL(qrUrl);
     };
   }, [qrUrl]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!value) return;
+  const handleProInterceptor = (e: React.MouseEvent | React.FocusEvent) => {
+    if (plan === 'FREE') {
+      e.preventDefault();
+      if ('blur' in e.target) {
+        (e.target as HTMLElement).blur();
+      }
+      setIsProModalOpen(true);
+    }
+  };
 
+  const handleGenerateQr = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
+    
     if (qrUrl) {
       URL.revokeObjectURL(qrUrl);
       setQrUrl(null);
     }
 
-    let finalValue = value;
-    if (type === 'tel') finalValue = `tel:${value}`;
-    if (type === 'email') finalValue = `mailto:${value}`;
-
     try {
-      const encodedValue = encodeURIComponent(finalValue);
-      const blob = await apiFetch<Blob>(`/api/v1/tools/qr?url=${encodedValue}&width=300&height=300`, {
-        responseType: 'blob'
-      });
+      const tipoBackend = tipoMapa[type] || 'URL';
+      let payloadData: Record<string, string> = {};
       
-      const objectUrl = URL.createObjectURL(blob);
-      setQrUrl(objectUrl);
-      toast.success("¡Código QR generado con éxito!");
-    } catch (err: unknown) {
-      const error = err as { status?: number; message?: string };
-      if (error.status === 400) {
-        toast.error(error.message || "Datos incorrectos para generar el QR");
-      } else {
-        toast.error("Error al generar el código QR");
+      switch (type) {
+        case 'LINK':
+          let sanitizedUrl = formData.url.trim();
+          if (!/^https?:\/\//i.test(sanitizedUrl)) {
+            sanitizedUrl = `https://${sanitizedUrl}`;
+          }
+          payloadData = { url: sanitizedUrl };
+          break;
+        case 'TELEFONO':
+          payloadData = { numero: formData.tel };
+          break;
+        case 'WHATSAPP':
+          payloadData = { 
+            numero: formData.whatsappPhone, 
+            mensaje: formData.whatsappMessage || '' 
+          };
+          break;
+        case 'EMAIL':
+          payloadData = { 
+            correo: formData.emailAddress, 
+            asunto: formData.emailSubject || '' 
+          };
+          break;
       }
+
+      const requestBody = {
+        tipo: tipoBackend,
+        payload: payloadData,
+        colorFondo: formatHex(backgroundColor),
+        colorFrente: formatHex(foregroundColor)
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tools/qr/generate`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token') || ''}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          setIsProModalOpen(true);
+          return;
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      setQrUrl(URL.createObjectURL(blob));
+      toast.success("¡Código QR generado con éxito!");
+    } catch (error: any) {
+      toast.error(error.message || "Error al generar el código QR");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDownload = () => {
+    if (!qrUrl) return;
+    const link = document.createElement('a');
+    link.href = qrUrl;
+    link.download = `NavajaGT_QR_${type}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <GlassCard className="p-8 max-w-2xl mx-auto rounded-[2.5rem]">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-brand-turquoise/10 text-brand-turquoise rounded-2xl">
-          <QrCode className="w-6 h-6" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Generador QR Pro</h2>
-          <p className="text-sm text-slate-500 font-medium">Crea códigos QR para enlaces, llamadas o correos.</p>
-        </div>
-      </div>
-
-      <div className="flex p-1 bg-slate-100 rounded-2xl mb-8">
-        {(['url', 'tel', 'email'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => { setType(t); setValue(''); setQrUrl(null); }}
-            className={cn(
-              "flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
-              type === t ? "bg-white text-brand-turquoise shadow-sm" : "text-slate-500 hover:text-slate-700"
-            )}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">
-            {type === 'url' ? 'Dirección URL' : type === 'tel' ? 'Número de Teléfono' : 'Correo Electrónico'}
-          </label>
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              {type === 'url' && <LinkIcon size={18} />}
-              {type === 'tel' && <Phone size={18} />}
-              {type === 'email' && <Mail size={18} />}
-            </div>
-            <input
-              type={type === 'email' ? 'email' : 'text'}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={type === 'url' ? 'https://ejemplo.com' : type === 'tel' ? '+34 600 000 000' : 'hola@ejemplo.com'}
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-2xl outline-none transition-all text-slate-900 font-medium text-base"
-            />
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <GlassCard className="p-8 max-w-2xl mx-auto rounded-[2.5rem] border-white/60 shadow-xl overflow-hidden relative">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-turquoise/5 blur-3xl" />
+        
+        <div className="relative z-10 flex items-center gap-4 mb-8">
+          <div className="p-3 bg-brand-turquoise/10 text-brand-turquoise rounded-2xl shadow-inner">
+            <QrCode className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Generador QR Dinámico</h2>
+            <p className="text-sm text-slate-500 font-medium">Crea, personaliza y descarga QRs de alta calidad.</p>
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 bg-brand-turquoise text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-turquoise/90 transition-all shadow-lg shadow-brand-turquoise/20 disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="animate-spin" size={18} /> : "Generar Código QR"}
-          {!loading && <ArrowRight size={18} />}
-        </button>
-      </form>
-
-      {qrUrl && (
-        <div className="mt-12 flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
-          <div className="p-4 bg-white rounded-[2rem] border-2 border-slate-100 shadow-xl relative group">
-            <img src={qrUrl} alt="QR Code" className="w-48 h-48" />
-            
-            <a 
-              href={qrUrl} 
-              download={`navajagt-qr-${type}.png`}
-              className="absolute inset-0 bg-slate-900/40 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"
+        {/* Tabs */}
+        <div className="relative z-10 flex p-1.5 bg-slate-100 rounded-[1.5rem] mb-10 overflow-x-auto no-scrollbar">
+          {(['LINK', 'WHATSAPP', 'TELEFONO', 'EMAIL'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => { setType(t); setQrUrl(null); }}
+              className={cn(
+                "flex-1 min-w-[100px] py-3.5 px-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300",
+                type === t 
+                  ? "bg-white text-brand-turquoise shadow-md scale-[1.02]" 
+                  : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
+              )}
             >
-              <div className="bg-white text-slate-900 px-4 py-2 rounded-xl font-bold flex items-center gap-2 text-sm shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                <Download size={16} /> Descargar
-              </div>
-            </a>
-          </div>
-          <p className="mt-4 text-xs font-black uppercase tracking-widest text-slate-400">Escanea o haz hover para descargar</p>
+              {t === 'TELEFONO' ? 'TELÉFONO' : t}
+            </button>
+          ))}
         </div>
-      )}
-    </GlassCard>
+
+        <form onSubmit={handleGenerateQr} className="relative z-10 space-y-10">
+          {/* Dynamic Form Fields */}
+          <div className="space-y-6">
+            {type === 'LINK' && (
+              <div className="space-y-3 animate-in slide-in-from-left-2 duration-300">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Dirección URL Destino</label>
+                <div className="relative group">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><LinkIcon size={20} /></div>
+                  <input 
+                    type="url" 
+                    required 
+                    value={formData.url} 
+                    onChange={(e) => setFormData({...formData, url: e.target.value})} 
+                    placeholder="https://tu-sitio.com" 
+                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-lg shadow-sm" 
+                  />
+                </div>
+              </div>
+            )}
+
+            {type === 'WHATSAPP' && (
+              <div className="space-y-6 animate-in slide-in-from-left-2 duration-300">
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Número de WhatsApp (con código)</label>
+                  <div className="relative group">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><Phone size={20} /></div>
+                    <input 
+                      type="tel" 
+                      required 
+                      value={formData.whatsappPhone} 
+                      onChange={(e) => setFormData({...formData, whatsappPhone: e.target.value})} 
+                      placeholder="+34 600 000 000" 
+                      className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-lg shadow-sm" 
+                    />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Mensaje Predeterminado</label>
+                  <div className="relative group">
+                    <div className="absolute left-5 top-6 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><MessageSquare size={20} /></div>
+                    <textarea 
+                      rows={4} 
+                      value={formData.whatsappMessage} 
+                      onChange={(e) => setFormData({...formData, whatsappMessage: e.target.value})} 
+                      placeholder="Hola, me gustaría más información..." 
+                      className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-base shadow-sm resize-none" 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {type === 'EMAIL' && (
+              <div className="space-y-6 animate-in slide-in-from-left-2 duration-300">
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Correo Electrónico Destino</label>
+                  <div className="relative group">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><Mail size={20} /></div>
+                    <input 
+                      type="email" 
+                      required 
+                      value={formData.emailAddress} 
+                      onChange={(e) => setFormData({...formData, emailAddress: e.target.value})} 
+                      placeholder="hola@empresa.com" 
+                      className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-lg shadow-sm" 
+                    />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Asunto del Correo</label>
+                  <input 
+                    type="text" 
+                    value={formData.emailSubject} 
+                    onChange={(e) => setFormData({...formData, emailSubject: e.target.value})} 
+                    placeholder="Consulta desde NavajaGT" 
+                    className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-lg shadow-sm" 
+                  />
+                </div>
+              </div>
+            )}
+
+            {type === 'TELEFONO' && (
+              <div className="space-y-3 animate-in slide-in-from-left-2 duration-300">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Número de Teléfono</label>
+                <div className="relative group">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><Phone size={20} /></div>
+                  <input 
+                    type="tel" 
+                    required 
+                    value={formData.tel} 
+                    onChange={(e) => setFormData({...formData, tel: e.target.value})} 
+                    placeholder="+34 600 000 000" 
+                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-transparent focus:border-brand-turquoise/20 focus:bg-white rounded-[1.5rem] outline-none transition-all text-slate-900 font-bold text-lg shadow-sm" 
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Pro Personalization */}
+          <div className="pt-8 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Palette className="text-brand-turquoise" size={20} />
+                <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">Personalización Pro</h4>
+              </div>
+              {plan === 'FREE' && (
+                <span className="bg-brand-mustard/10 text-brand-mustard text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-brand-mustard/20">
+                  Premium
+                </span>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Color de Frente</label>
+                <div className="relative">
+                  <input 
+                    type="color" 
+                    value={foregroundColor} 
+                    onChange={(e) => plan === 'PRO' ? setForegroundColor(e.target.value) : handleProInterceptor(e as any)}
+                    onClick={handleProInterceptor}
+                    onFocus={handleProInterceptor}
+                    className={cn(
+                      "w-full h-14 rounded-2xl cursor-pointer bg-white border-2 border-slate-100 p-1 transition-all",
+                      plan === 'FREE' && "opacity-50 grayscale"
+                    )} 
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-slate-400 pointer-events-none">{foregroundColor.toUpperCase()}</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Color de Fondo</label>
+                <div className="relative">
+                  <input 
+                    type="color" 
+                    value={backgroundColor} 
+                    onChange={(e) => plan === 'PRO' ? setBackgroundColor(e.target.value) : handleProInterceptor(e as any)}
+                    onClick={handleProInterceptor}
+                    onFocus={handleProInterceptor}
+                    className={cn(
+                      "w-full h-14 rounded-2xl cursor-pointer bg-white border-2 border-slate-100 p-1 transition-all",
+                      plan === 'FREE' && "opacity-50 grayscale"
+                    )} 
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-slate-400 pointer-events-none">{backgroundColor.toUpperCase()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="group w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="animate-spin" size={24} /> : "Generar QR Premium"}
+            {!loading && <ArrowRight className="group-hover:translate-x-1 transition-transform" size={24} />}
+          </button>
+        </form>
+
+        {qrUrl && (
+          <div className="mt-16 flex flex-col items-center animate-in fade-in zoom-in-95 duration-1000">
+            <div className="group relative overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl mb-10">
+              <img src={qrUrl} alt="QR Code Result" className="w-64 h-64 object-contain" />
+              
+              {/* Overlay de Hover */}
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                <button 
+                  onClick={handleDownload}
+                  className="flex items-center gap-2 bg-brand-turquoise text-white px-6 py-3 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:scale-105"
+                >
+                  <Download className="w-5 h-5" />
+                  Descargar QR
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex flex-col items-center gap-4 w-full">
+              <p className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600">
+                <CheckCircle2 size={16} /> ¡QR Generado con éxito!
+              </p>
+            </div>
+          </div>
+        )}
+      </GlassCard>
+
+      <ProUpgradeModal 
+        isOpen={isProModalOpen} 
+        onClose={() => setIsProModalOpen(false)} 
+        message="La personalización de colores de código QR es una función exclusiva de usuarios PRO." 
+      />
+    </div>
   );
 };
