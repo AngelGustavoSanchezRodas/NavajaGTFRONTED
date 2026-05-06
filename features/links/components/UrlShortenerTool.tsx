@@ -9,6 +9,7 @@ import { apiFetch } from "@/shared/lib/api";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { ProUpgradeModal } from "@/shared/components/ui/ProUpgradeModal";
 import { useCopyToClipboard } from "@/shared/hooks/useCopyToClipboard";
+import { cn } from "@/shared/lib/utils";
 
 interface ShortenResponse {
   alias: string;
@@ -201,36 +202,61 @@ export function UrlShortenerTool() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="relative flex items-center pt-1 pb-2">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 pt-1">
-                    <span className="text-sm font-bold text-slate-400 italic">@</span>
+                <div className="space-y-2 pt-1 pb-2">
+                  <div className="flex items-center justify-between px-1">
+                    <label htmlFor="shortener-alias" className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      Alias Personalizado
+                    </label>
+                    {plan === 'FREE' && (
+                      <div className="flex items-center gap-1 bg-gradient-to-r from-brand-magenta to-brand-magenta/80 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                        <Lock size={10} />
+                        PRO
+                      </div>
+                    )}
                   </div>
-                  <input
-                    id="shortener-alias"
-                    type="text"
-                    value={alias}
-                    onChange={(event) => { setAlias(event.target.value); setError(null); }}
-                    onFocus={plan === 'FREE' ? (e) => {
-                      e.preventDefault();
-                      e.target.blur();
-                      setModalMessage("Actualiza a PRO para usar alias personalizados");
-                      setIsModalOpen(true);
-                    } : undefined}
-                    placeholder="Alias personalizado (opcional)"
-                    disabled={plan === 'FREE'}
-                    className={`h-16 w-full rounded-2xl border pl-12 pr-10 text-base outline-none transition-all font-medium ${
-                      plan === 'FREE' 
-                        ? 'border-transparent bg-slate-100 text-slate-400 cursor-not-allowed' 
-                        : error?.includes('alias') || error?.includes('Alias')
-                          ? 'border-red-500 bg-red-50 text-red-900 focus:ring-4 focus:ring-red-500/10 placeholder:text-red-300'
-                          : 'border-transparent bg-slate-50 text-slate-900 focus:bg-white focus:border-brand-turquoise/30 focus:ring-4 focus:ring-brand-turquoise/5 placeholder:text-slate-400'
-                    }`}
-                  />
-                  {plan === 'FREE' && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none pb-1">
-                      <Lock className="h-4 w-4 text-slate-400" />
+
+                  <div className="relative flex items-center group">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
+                      <span className="text-sm font-bold text-slate-400 italic">@</span>
                     </div>
-                  )}
+                    
+                    <input
+                      id="shortener-alias"
+                      type="text"
+                      value={alias}
+                      onChange={(event) => { setAlias(event.target.value); setError(null); }}
+                      placeholder={plan === 'FREE' ? "Desbloquea Premium para personalizar" : "tu-alias-aqui"}
+                      disabled={plan === 'FREE'}
+                      className={cn(
+                        "h-16 w-full rounded-2xl border pl-12 pr-12 text-base outline-none transition-all font-medium shadow-sm",
+                        plan === 'FREE' 
+                          ? 'bg-slate-100 border-transparent text-slate-400 cursor-not-allowed' 
+                          : error?.includes('alias') || error?.includes('Alias')
+                            ? 'border-red-500 bg-red-50 text-red-900 focus:ring-4 focus:ring-red-500/10 placeholder:text-red-300'
+                            : 'border-transparent bg-slate-50 text-slate-900 focus:bg-white focus:border-brand-turquoise/30 focus:ring-4 focus:ring-brand-turquoise/5'
+                      )}
+                    />
+
+                    {plan === 'FREE' && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setModalMessage("La personalización de alias es una función exclusiva para usuarios PRO.");
+                          setIsModalOpen(true);
+                        }}
+                        className="absolute inset-0 z-20 w-full h-full cursor-pointer rounded-2xl bg-transparent"
+                        aria-label="Desbloquear Alias Premium"
+                      />
+                    )}
+
+                    {plan === 'FREE' && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
+                        <Lock className="h-5 w-5 text-slate-300 group-hover:text-brand-magenta transition-colors" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
