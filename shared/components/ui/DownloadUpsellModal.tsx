@@ -17,9 +17,16 @@ import { cn } from '@/shared/lib/utils';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
+  subtitle?: string;
 }
 
-export const DownloadUpsellModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const DownloadUpsellModal: React.FC<Props> = ({ 
+  isOpen, 
+  onClose,
+  title = "¡Tu QR está listo y descargado! 🚀",
+  subtitle = "Has dado el primer paso, ahora dale superpoderes a tus enlaces."
+}) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -59,10 +66,10 @@ export const DownloadUpsellModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
                 <div className="text-center space-y-3 mb-10">
                   <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
-                    ¡Tu QR está listo y descargado! 🚀
+                    {title}
                   </h2>
                   <p className="text-slate-500 font-medium">
-                    Has dado el primer paso, ahora dale superpoderes a tus enlaces.
+                    {subtitle}
                   </p>
                 </div>
 

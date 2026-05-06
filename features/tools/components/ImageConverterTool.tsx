@@ -8,6 +8,7 @@ import { apiFetch } from "@/shared/lib/api";
 import { toast } from "sonner";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { ProUpgradeModal } from "@/shared/components/ui/ProUpgradeModal";
+import { DownloadUpsellModal } from "@/shared/components/ui/DownloadUpsellModal";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -27,6 +28,7 @@ export function ImageConverterTool() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
+  const [isUpsellModalOpen, setIsUpsellModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   
@@ -140,17 +142,7 @@ export function ImageConverterTool() {
       // Upsell Post-Descarga (Hook de Conversión PLG)
       if (plan === 'FREE') {
         setTimeout(() => {
-          toast('¡Conversión exitosa! 🚀', {
-            description: 'Desbloquea formatos como WEBP y conversión masiva pasándote a PRO.',
-            action: {
-              label: 'Ver Premium',
-              onClick: () => {
-                setModalMessage("Mejora tu flujo de trabajo con la conversión masiva y formatos de alta eficiencia.");
-                setIsProModalOpen(true);
-              },
-            },
-            duration: 8000,
-          });
+          setIsUpsellModalOpen(true);
         }, 1500);
       } else {
         toast.success(`¡${files.length} archivo(s) convertido(s) con éxito!`);
@@ -168,60 +160,78 @@ export function ImageConverterTool() {
     <div className="mx-auto w-full max-w-xl space-y-6">
       <GlassCard className="p-6 md:p-8 space-y-8">
         
-        {/* Dropzone */}
-        <div 
-          className={cn(
-            "relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300",
-            isDragging ? "border-brand-turquoise bg-brand-turquoise/5 scale-[1.02]" : "border-slate-200 bg-slate-50/50 hover:border-brand-turquoise/50"
-          )}
-          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={onDrop}
-        >
-          <input 
-            type="file" 
-            multiple 
-            onChange={handleFileChange}
-            className="hidden" 
-            id="file-upload" 
-            ref={fileInputRef}
-            accept="image/*"
-          />
-          <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4">
-            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-slate-400">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-            <div>
-              <span className="text-slate-900 font-bold text-lg block">Arrastra tus imágenes aquí</span>
-              <span className="text-sm text-slate-500 font-medium mt-1 block">
-                {plan === 'FREE' ? 'Máx. 1 imagen (Actualiza a PRO para lotes)' : 'Sube múltiples imágenes a la vez'}
-              </span>
-            </div>
-          </label>
-        </div>
+        {/* Dynamic Area: Dropzone or Large Preview */}
+        {files.length === 0 ? (
+          <div 
+            className={cn(
+              "relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300",
+              isDragging ? "border-brand-turquoise bg-brand-turquoise/5 scale-[1.02]" : "border-slate-200 bg-slate-50/50 hover:border-brand-turquoise/50"
+            )}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={onDrop}
+          >
+            <input 
+              type="file" 
+              multiple 
+              onChange={handleFileChange}
+              className="hidden" 
+              id="file-upload" 
+              ref={fileInputRef}
+              accept="image/*"
+            />
+            <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-slate-400">
+                <ImageIcon className="w-8 h-8" />
+              </div>
+              <div>
+                <span className="text-slate-900 font-bold text-lg block">Arrastra tus imágenes aquí</span>
+                <span className="text-sm text-slate-500 font-medium mt-1 block">
+                  {plan === 'FREE' ? 'Máx. 1 imagen (Actualiza a PRO para lotes)' : 'Sube múltiples imágenes a la vez'}
+                </span>
+              </div>
+            </label>
+          </div>
+        ) : (
+          <div className="relative w-full rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-inner group transition-all duration-500">
+            <div className="aspect-[4/3] sm:aspect-video relative flex items-center justify-center p-4">
+              <img 
+                src={previews[0]} 
+                alt="Preview principal" 
+                className="w-full h-full object-contain drop-shadow-sm rounded-xl animate-in fade-in zoom-in-95 duration-500"
+              />
+              
+              {/* Badge Formato Original */}
+              <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 shadow-lg flex items-center gap-2">
+                <ImageIcon size={14} className="text-brand-turquoise" />
+                Formato detectado: {files[0].name.split('.').pop()?.toUpperCase() || 'IMG'}
+              </div>
 
-        {/* File Previews */}
-        {files.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Archivos seleccionados ({files.length})</h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {files.map((file, idx) => (
-                <div key={`${file.name}-${idx}`} className="relative group bg-slate-50 rounded-xl p-2 border border-slate-100 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0">
-                    <img src={previews[idx]} alt="preview" className="w-full h-full object-cover" />
+              {/* Botón Cerrar/Reset */}
+              <button 
+                onClick={() => {
+                  setFiles([]);
+                  setPreviews([]);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                }}
+                className="absolute top-4 right-4 bg-white/90 backdrop-blur-md hover:bg-white text-slate-700 p-2.5 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100 hover:text-red-500 hover:scale-105 active:scale-95"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Indicador de archivos múltiples */}
+              {files.length > 1 && (
+                <div className="absolute bottom-4 right-4 bg-brand-turquoise text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-brand-turquoise/20 flex items-center gap-2 animate-in slide-in-from-bottom-2">
+                  <div className="flex -space-x-2">
+                    {previews.slice(1, 4).map((url, i) => (
+                      <div key={i} className="w-6 h-6 rounded-full border-2 border-brand-turquoise overflow-hidden bg-white">
+                        <img src={url} className="w-full h-full object-cover" />
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold text-slate-700 truncate">{file.name}</p>
-                    <p className="text-[9px] text-slate-500">{(file.size / 1024).toFixed(0)} KB</p>
-                  </div>
-                  <button 
-                    onClick={() => removeFile(idx)}
-                    className="absolute -top-2 -right-2 bg-white border border-slate-200 text-slate-400 hover:text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                  >
-                    <X size={12} />
-                  </button>
+                  <span>+ {files.length - 1} imágenes</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
@@ -268,6 +278,13 @@ export function ImageConverterTool() {
         isOpen={isProModalOpen} 
         onClose={() => setIsProModalOpen(false)} 
         message={modalMessage} 
+      />
+
+      <DownloadUpsellModal 
+        isOpen={isUpsellModalOpen}
+        onClose={() => setIsUpsellModalOpen(false)}
+        title="¡Imágenes convertidas! 🚀"
+        subtitle="Desbloquea conversiones masivas y formatos WEBP/TIFF pasándote a PRO."
       />
     </div>
   );
