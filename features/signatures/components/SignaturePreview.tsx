@@ -1,12 +1,12 @@
 import React, { forwardRef } from 'react';
 
 export interface SignatureData {
-  fullName: string;
-  jobTitle: string;
-  companyName: string;
+  nombre: string;
+  cargo: string;
+  empresa: string;
   email: string;
-  phone: string;
-  website: string;
+  telefono: string;
+  sitioWeb: string;
   photoUrl: string;
   linkedin: string;
   twitter: string;
@@ -35,7 +35,7 @@ export const SignaturePreview = forwardRef<HTMLDivElement, SignaturePreviewProps
                 <td style={{ paddingRight: '20px', verticalAlign: 'top', width: '100px' }}>
                   <img
                     src={data.photoUrl}
-                    alt={data.fullName}
+                    alt={data.nombre}
                     width={100}
                     height={100}
                     style={{ borderRadius: '50%', objectFit: 'cover', width: '100px', height: '100px', display: 'block', border: `3px solid ${accentColor}` }}
@@ -47,15 +47,15 @@ export const SignaturePreview = forwardRef<HTMLDivElement, SignaturePreviewProps
                   <tbody>
                     <tr>
                       <td style={{ fontSize: '18px', fontWeight: 'bold', color: primaryColor, paddingBottom: '4px' }}>
-                        {data.fullName || 'Tu Nombre'}
+                        {data.nombre || 'Tu Nombre'}
                       </td>
                     </tr>
-                    {(data.jobTitle || data.companyName) && (
+                    {(data.cargo || data.empresa) && (
                       <tr>
                         <td style={{ fontSize: '14px', color: textColor, paddingBottom: '12px' }}>
-                          <span style={{ fontWeight: 'bold' }}>{data.jobTitle || 'Tu Cargo'}</span>
-                          {data.jobTitle && data.companyName && ' | '}
-                          <span>{data.companyName || 'Tu Empresa'}</span>
+                          <span style={{ fontWeight: 'bold' }}>{data.cargo || 'Tu Cargo'}</span>
+                          {data.cargo && data.empresa && ' | '}
+                          <span>{data.empresa || 'Tu Empresa'}</span>
                         </td>
                       </tr>
                     )}
@@ -66,11 +66,11 @@ export const SignaturePreview = forwardRef<HTMLDivElement, SignaturePreviewProps
                       <td style={{ paddingTop: '12px' }}>
                         <table cellPadding={0} cellSpacing={0} border={0} style={{ fontSize: '12px', color: textColor }}>
                           <tbody>
-                            {data.phone && (
+                            {data.telefono && (
                               <tr>
                                 <td style={{ paddingBottom: '4px' }}>
                                   <span style={{ color: accentColor, fontWeight: 'bold', marginRight: '6px' }}>T</span> 
-                                  <a href={`tel:${data.phone}`} style={{ color: textColor, textDecoration: 'none' }}>{data.phone}</a>
+                                  <a href={`tel:${data.telefono}`} style={{ color: textColor, textDecoration: 'none' }}>{data.telefono}</a>
                                 </td>
                               </tr>
                             )}
@@ -82,11 +82,11 @@ export const SignaturePreview = forwardRef<HTMLDivElement, SignaturePreviewProps
                                 </td>
                               </tr>
                             )}
-                            {data.website && (
+                            {data.sitioWeb && (
                               <tr>
                                 <td style={{ paddingBottom: '4px' }}>
                                   <span style={{ color: accentColor, fontWeight: 'bold', marginRight: '6px' }}>W</span> 
-                                  <a href={data.website} target="_blank" rel="noopener noreferrer" style={{ color: textColor, textDecoration: 'none' }}>{data.website.replace(/^https?:\/\//, '')}</a>
+                                  <a href={data.sitioWeb} target="_blank" rel="noopener noreferrer" style={{ color: textColor, textDecoration: 'none' }}>{data.sitioWeb.replace(/^https?:\/\//, '')}</a>
                                 </td>
                               </tr>
                             )}

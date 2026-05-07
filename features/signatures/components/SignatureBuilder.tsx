@@ -26,12 +26,12 @@ export function SignatureBuilder() {
   const [isSaving, setIsSaving] = useState(false);
   
   const [data, setData] = useState<SignatureData>({
-    fullName: '',
-    jobTitle: '',
-    companyName: '',
+    nombre: '',
+    cargo: '',
+    empresa: '',
     email: '',
-    phone: '',
-    website: '',
+    telefono: '',
+    sitioWeb: '',
     photoUrl: '',
     linkedin: '',
     twitter: '',
@@ -137,8 +137,8 @@ export function SignatureBuilder() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre Completo</label>
                       <input 
                         type="text" 
-                        value={data.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        value={data.nombre}
+                        onChange={(e) => handleInputChange('nombre', e.target.value)}
                         placeholder="Ej. Juan Pérez"
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                       />
@@ -175,8 +175,8 @@ export function SignatureBuilder() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cargo / Puesto</label>
                       <input 
                         type="text" 
-                        value={data.jobTitle}
-                        onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                        value={data.cargo}
+                        onChange={(e) => handleInputChange('cargo', e.target.value)}
                         placeholder="Ej. Director de Marketing"
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                       />
@@ -185,8 +185,8 @@ export function SignatureBuilder() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la Empresa</label>
                       <input 
                         type="text" 
-                        value={data.companyName}
-                        onChange={(e) => handleInputChange('companyName', e.target.value)}
+                        value={data.empresa}
+                        onChange={(e) => handleInputChange('empresa', e.target.value)}
                         placeholder="Ej. NavajaGT S.A."
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                       />
@@ -214,8 +214,8 @@ export function SignatureBuilder() {
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</label>
                         <input 
                           type="text" 
-                          value={data.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          value={data.telefono}
+                          onChange={(e) => handleInputChange('telefono', e.target.value)}
                           placeholder="+502 1234-5678"
                           className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                         />
@@ -235,8 +235,8 @@ export function SignatureBuilder() {
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sitio Web</label>
                       <input 
                         type="url" 
-                        value={data.website}
-                        onChange={(e) => handleInputChange('website', e.target.value)}
+                        value={data.sitioWeb}
+                        onChange={(e) => handleInputChange('sitioWeb', e.target.value)}
                         placeholder="https://navaja.gt"
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                       />
