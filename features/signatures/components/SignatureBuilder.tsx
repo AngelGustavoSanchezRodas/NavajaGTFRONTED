@@ -72,6 +72,7 @@ export function SignatureBuilder() {
     setIsSaving(true);
     try {
       const payload = {
+        urlOriginal: "https://navaja.gt/signature-preview",
         tipo: "SIGNATURE",
         metadata: {
           ...data,
@@ -79,7 +80,7 @@ export function SignatureBuilder() {
         }
       };
 
-      await apiFetch('/api/v1/tools/signature', {
+      await apiFetch('/api/core/links/create/', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
