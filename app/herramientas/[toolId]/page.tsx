@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { UrlShortenerTool } from "@/features/links/components/UrlShortenerTool";
-import BiolinkBuilder from "@/features/dashboard/components/BiolinkBuilder";
+import { SignatureBuilder } from "@/features/signatures/components/SignatureBuilder";
 import { BackgroundGlow } from "@/shared/components/ui/BackgroundGlow";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -24,8 +24,8 @@ export default function ToolPage() {
     switch (toolId) {
       case "acortador":
         return <UrlShortenerTool />;
-      case "biolink":
-        return <BiolinkBuilder />;
+      case "signature":
+        return <SignatureBuilder />;
       case "convertidor":
         return <ImageConverterTool />;
       case "qr":
@@ -45,7 +45,7 @@ export default function ToolPage() {
   const getTitle = () => {
     switch (toolId) {
       case "acortador": return "Acortador de Enlaces";
-      case "biolink": return "Biolink Builder";
+      case "signature": return "Generador de Firmas B2B";
       case "convertidor": return "Convertidor de Imágenes";
       case "qr": return "Generador QR Pro";
       default: return "Herramienta";

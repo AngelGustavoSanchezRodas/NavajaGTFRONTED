@@ -23,8 +23,8 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
   const tabs = [
     { id: "top", label: "Top Herramientas", icon: Sparkles },
     { id: "shortener", label: "Acortador", icon: LinkIcon, color: "text-brand-turquoise", bg: "bg-brand-turquoise/10" },
-    { id: "biolink", label: "Biolinks", icon: ImageIcon, color: "text-brand-magenta", bg: "bg-brand-magenta/10" },
     { id: "qr", label: "Códigos QR", icon: QrCode, color: "text-amber-600", bg: "bg-amber-500/10" },
+    { id: "signature", label: "Firmas", icon: ImageIcon, color: "text-brand-magenta", bg: "bg-brand-magenta/10" },
   ];
 
   return (
