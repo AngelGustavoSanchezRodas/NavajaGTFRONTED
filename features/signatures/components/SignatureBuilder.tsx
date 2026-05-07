@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Copy, Lock, ChevronDown, Check, Sparkles, User, Building2, Phone, Share2 } from "lucide-react";
+import { Copy, Lock, ChevronDown, Check, Sparkles, User, Building2, Phone, Share2, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { ProUpgradeModal } from "@/shared/components/ui/ProUpgradeModal";
 import { GlassCard } from "@/shared/components/ui/GlassCard";
 import { cn } from "@/shared/lib/utils";
+import { apiFetch } from "@/shared/lib/api";
 import { SignaturePreview, SignatureData } from "./SignaturePreview";
 
 const TEMPLATES = [
@@ -22,6 +23,7 @@ export function SignatureBuilder() {
   const [activeAccordion, setActiveAccordion] = useState<string>('personal');
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [templateId, setTemplateId] = useState('minimal');
+  const [isSaving, setIsSaving] = useState(false);
   
   const [data, setData] = useState<SignatureData>({
     fullName: '',
@@ -63,6 +65,31 @@ export function SignatureBuilder() {
     } catch (error) {
       console.error("Error al copiar:", error);
       toast.error("Error al copiar la firma.");
+    }
+  };
+
+  const handleSaveSignature = async () => {
+    setIsSaving(true);
+    try {
+      const payload = {
+        tipo: "SIGNATURE",
+        metadata: {
+          ...data,
+          templateId
+        }
+      };
+
+      await apiFetch('/api/v1/tools/signature', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      
+      toast.success("¡Firma guardada correctamente!");
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      toast.error("Error al guardar la firma en tu cuenta.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -305,14 +332,24 @@ export function SignatureBuilder() {
           />
         </GlassCard>
 
-        {/* Copy Button */}
-        <button 
-          onClick={handleCopySignature}
-          className="group w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98]"
-        >
-          <Copy className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          Copiar Firma
-        </button>
+        <div className="flex gap-4">
+          <button 
+            onClick={handleCopySignature}
+            className="group flex-1 py-4 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase tracking-[0.1em] flex items-center justify-center gap-2 hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98]"
+          >
+            <Copy className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            Copiar
+          </button>
+          
+          <button 
+            onClick={handleSaveSignature}
+            disabled={isSaving}
+            className="group flex-1 py-4 bg-brand-turquoise text-slate-900 rounded-[1.5rem] font-black uppercase tracking-[0.1em] flex items-center justify-center gap-2 hover:bg-brand-turquoise/90 transition-all shadow-xl shadow-brand-turquoise/20 active:scale-[0.98] disabled:opacity-50"
+          >
+            {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+            Guardar
+          </button>
+        </div>
       </div>
 
       <ProUpgradeModal 

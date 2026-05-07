@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, LayoutDashboard, Settings, LogOut, ChevronDown, Sparkles } from "lucide-react";
+import { User, LayoutDashboard, Settings, LogOut, ChevronDown, Sparkles, Grid } from "lucide-react";
 import { siteConfig } from "@/shared/config/site";
 import { cn } from "@/shared/lib/utils";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -17,6 +17,7 @@ export function PublicNavbar() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setIsMounted(true));
@@ -42,10 +43,54 @@ export function PublicNavbar() {
     { label: "Configuración", icon: Settings, href: "/dashboard/settings" },
   ];
 
+  const toolsList = [
+    { label: "Acortador de URLs", href: "/herramientas/acortador" },
+    { label: "Generador QR", href: "/herramientas/qr" },
+    { label: "Convertidor de Imágenes", href: "/herramientas/convertidor" },
+    { label: "Firmas B2B", href: "/herramientas/signature" }
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/40 bg-white/80 backdrop-blur-md transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white transition-all duration-300">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <BrandLogo />
+        <div className="flex items-center gap-8">
+          <BrandLogo />
+          
+          {/* Menu Todas las Herramientas */}
+          <div className="hidden md:block relative">
+            <button
+              onMouseEnter={() => setIsToolsOpen(true)}
+              onMouseLeave={() => setIsToolsOpen(false)}
+              className="flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-brand-turquoise py-5"
+            >
+              Todas las herramientas
+              <ChevronDown size={14} className={cn("transition-transform", isToolsOpen && "rotate-180")} />
+            </button>
+
+            <AnimatePresence>
+              {isToolsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 5 }}
+                  onMouseEnter={() => setIsToolsOpen(true)}
+                  onMouseLeave={() => setIsToolsOpen(false)}
+                  className="absolute left-0 top-[100%] w-64 bg-white border border-slate-200 shadow-xl rounded-xl overflow-hidden py-2"
+                >
+                  {toolsList.map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="block px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-turquoise transition-colors"
+                    >
+                      {tool.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
           <button
@@ -145,20 +190,20 @@ export function PublicNavbar() {
                 key="guest-ui"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center gap-3"
+                className="flex items-center gap-4"
                 aria-label="Navegación principal"
               >
                 <Link
                   href="/login"
-                  className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-brand-turquoise active:scale-95"
+                  className="text-sm font-bold text-slate-700 transition-all hover:text-brand-turquoise"
                 >
                   Iniciar Sesión
                 </Link>
                 <Link
                   href="/register"
-                  className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-brand-turquoise px-6 py-2.5 text-sm font-bold text-white transition-all hover:shadow-[0_8px_30px_rgb(45,212,191,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
+                  className="flex items-center justify-center rounded-xl bg-brand-turquoise px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-brand-turquoise/90 active:scale-95 shadow-sm"
                 >
-                  <span className="relative z-10">Registrarse gratis</span>
+                  Registrarse
                 </Link>
               </motion.nav>
             )}
