@@ -92,10 +92,10 @@ export function PublicNavbar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => setIsProModalOpen(true)}
-            className="hidden md:flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-200 to-yellow-400 px-4 py-2 text-xs font-black uppercase tracking-wider text-amber-900 transition-all hover:shadow-lg hover:shadow-yellow-500/20 active:scale-95 border border-yellow-300"
+            className="hidden md:flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-200 to-yellow-400 px-4 py-2 text-sm font-medium text-amber-900 transition-all hover:shadow-lg hover:shadow-yellow-500/20 active:scale-95 border border-yellow-300"
           >
             <Sparkles size={14} className="animate-pulse" />
             Upgrade PRO
@@ -106,11 +106,11 @@ export function PublicNavbar() {
                 key="auth-ui"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3"
+                className="flex items-center gap-4"
               >
                 <Link 
                   href="/dashboard"
-                  className="hidden sm:flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200 active:scale-95"
+                  className="hidden sm:flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200 active:scale-95"
                 >
                   <LayoutDashboard size={18} />
                   <span>Ir a mi Workspace</span>

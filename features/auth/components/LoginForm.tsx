@@ -23,7 +23,7 @@ export function LoginForm() {
     try {
       const data = await authService.login(email, password);
       if (data?.token) {
-        login(data.token);
+        login(data.token, data.user);
       }
       toast.success("¡Bienvenido de nuevo!");
       

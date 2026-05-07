@@ -158,7 +158,7 @@ export function ImageConverterTool() {
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-6">
-      <GlassCard className="p-6 md:p-8 space-y-8">
+      <GlassCard className="p-5 sm:p-8 lg:p-10 space-y-8">
         
         {/* Dynamic Area: Dropzone or Large Preview */}
         {files.length === 0 ? (
@@ -198,7 +198,7 @@ export function ImageConverterTool() {
               <img 
                 src={previews[0]} 
                 alt="Preview principal" 
-                className="w-full h-full object-contain drop-shadow-sm rounded-xl animate-in fade-in zoom-in-95 duration-500"
+                className="w-full h-full max-h-[60vh] object-contain drop-shadow-sm rounded-xl animate-in fade-in zoom-in-95 duration-500"
               />
               
               {/* Badge Formato Original */}

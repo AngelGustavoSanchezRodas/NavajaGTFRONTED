@@ -13,6 +13,8 @@ import {
 import { GlassCard } from './GlassCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/shared/lib/utils';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   isOpen: boolean;
@@ -27,23 +29,25 @@ export const DownloadUpsellModal: React.FC<Props> = ({
   title = "¡Tu QR está listo y descargado! 🚀",
   subtitle = "Has dado el primer paso, ahora dale superpoderes a tus enlaces."
 }) => {
-  return (
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-          />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+          <div className="absolute inset-0" onClick={onClose} />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg z-10"
+            className="w-full max-w-md relative overflow-hidden rounded-2xl shadow-2xl scale-100 transition-all pointer-events-auto"
           >
             <GlassCard className="p-8 sm:p-10 border-white/40 shadow-2xl overflow-hidden rounded-[2.5rem]">
               {/* Background Decoration */}
@@ -120,6 +124,7 @@ export const DownloadUpsellModal: React.FC<Props> = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };

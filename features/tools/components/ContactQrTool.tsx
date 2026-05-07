@@ -185,7 +185,7 @@ export const ContactQrTool: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <GlassCard className="p-8 max-w-2xl mx-auto rounded-[2.5rem] border-white/60 shadow-xl overflow-hidden relative">
+      <GlassCard className="p-5 sm:p-8 lg:p-10 max-w-2xl mx-auto rounded-[2.5rem] border-white/60 shadow-xl overflow-hidden relative">
         <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-turquoise/5 blur-3xl" />
         
         <div className="relative z-10 flex items-center gap-4 mb-8">
@@ -217,9 +217,9 @@ export const ContactQrTool: React.FC = () => {
           ))}
         </div>
 
-        <form onSubmit={handleGenerateQr} className="relative z-10 space-y-10">
+        <form onSubmit={handleGenerateQr} className="relative z-10 flex flex-col gap-8 sm:gap-10">
           {/* Dynamic Form Fields */}
-          <div className="space-y-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
             {type === 'LINK' && (
               <div className="space-y-3 animate-in slide-in-from-left-2 duration-300">
                 <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Dirección URL Destino</label>
@@ -238,8 +238,8 @@ export const ContactQrTool: React.FC = () => {
             )}
 
             {type === 'WHATSAPP' && (
-              <div className="space-y-6 animate-in slide-in-from-left-2 duration-300">
-                <div className="space-y-3">
+              <div className="flex flex-col gap-4 sm:gap-6 animate-in slide-in-from-left-2 duration-300">
+                <div className="flex flex-col gap-3">
                   <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Número de WhatsApp (con código)</label>
                   <div className="relative group">
                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><Phone size={20} /></div>
@@ -270,8 +270,8 @@ export const ContactQrTool: React.FC = () => {
             )}
 
             {type === 'EMAIL' && (
-              <div className="space-y-6 animate-in slide-in-from-left-2 duration-300">
-                <div className="space-y-3">
+              <div className="flex flex-col gap-4 sm:gap-6 animate-in slide-in-from-left-2 duration-300">
+                <div className="flex flex-col gap-3">
                   <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Correo Electrónico Destino</label>
                   <div className="relative group">
                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-turquoise transition-colors"><Mail size={20} /></div>
@@ -450,8 +450,8 @@ export const ContactQrTool: React.FC = () => {
 
         {qrUrl && (
           <div className="mt-16 flex flex-col items-center animate-in fade-in zoom-in-95 duration-1000">
-            <div className="group relative overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl mb-10">
-              <img src={qrUrl} alt="QR Code Result" className="w-64 h-64 object-contain" />
+            <div className="group relative overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl mb-10 max-h-[60vh]">
+              <img src={qrUrl} alt="QR Code Result" className="w-64 h-64 max-h-[60vh] object-contain" />
               
               {/* Overlay de Hover */}
               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">

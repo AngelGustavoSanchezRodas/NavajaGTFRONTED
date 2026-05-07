@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { UrlShortenerTool } from "@/features/links/components/UrlShortenerTool";
 import { SignatureBuilder } from "@/features/signatures/components/SignatureBuilder";
 import { BackgroundGlow } from "@/shared/components/ui/BackgroundGlow";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { ImageConverterTool } from "@/features/tools/components/ImageConverterTool";
@@ -53,18 +52,10 @@ export default function ToolPage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-slate-50 pt-20 pb-20">
+    <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 relative min-h-screen">
       <BackgroundGlow color="turquoise" className="left-[-10%] top-[-5%] h-[40rem] w-[40rem] opacity-20" />
       
-      <div className="relative z-10 mx-auto max-w-4xl px-4">
-        <Link 
-          href="/" 
-          className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-slate-900"
-        >
-          <ArrowLeft size={16} />
-          Volver a NavajaGT
-        </Link>
-
+      <div className="relative z-10 w-full">
         <header className="mb-12 text-center">
           <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
             {getTitle()}
@@ -74,7 +65,7 @@ export default function ToolPage() {
           </p>
         </header>
 
-        <div className="w-full shadow-2xl rounded-3xl overflow-hidden bg-white/40 backdrop-blur-xl border border-white/60">
+        <div className="w-full">
           {isMounted && renderTool()}
         </div>
       </div>

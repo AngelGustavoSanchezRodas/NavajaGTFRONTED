@@ -23,7 +23,7 @@ export function RegisterForm() {
       toast.success("Cuenta creada correctamente");
       
       if (data?.token) {
-        login(data.token);
+        login(data.token, data.user);
         window.location.href = "/";
       } else {
         window.location.href = "/login";
