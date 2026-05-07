@@ -86,7 +86,12 @@ export function SignatureBuilder() {
       });
       
       toast.success("¡Firma guardada correctamente!");
-    } catch (error) {
+    } catch (error: any) {
+      if (error.status === 403) {
+        setIsProModalOpen(true);
+        toast.error('La plantilla seleccionada es exclusiva del plan PRO.');
+        return;
+      }
       console.error("Error al guardar:", error);
       toast.error("Error al guardar la firma en tu cuenta.");
     } finally {
