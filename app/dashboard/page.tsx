@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { UrlShortenerTool } from '@/features/links/components/UrlShortenerTool';
-import BiolinkBuilder from '@/features/dashboard/components/BiolinkBuilder';
 import { ContactQrTool } from '@/features/tools/components/ContactQrTool';
 import { ImageConverterTool } from '@/features/tools/components/ImageConverterTool';
+import { SignatureBuilder } from '@/features/signatures/components/SignatureBuilder';
+import { apiFetch } from '@/shared/lib/api';
 import { GlassCard } from '@/shared/components/ui/GlassCard';
 import { useDashboard } from '@/shared/contexts/DashboardContext';
 import { 
@@ -33,6 +34,23 @@ export default function DashboardPage() {
     setCurrentDate(new Date().toLocaleDateString('es-ES', options));
   }, []);
 
+  const [links, setLinks] = useState<any[]>([]);
+  const [isLoadingLinks, setIsLoadingLinks] = useState(true);
+
+  useEffect(() => {
+    const fetchLinks = async () => {
+      try {
+        const data = await apiFetch<any[]>('/api/management/links/list/');
+        setLinks(data || []);
+      } catch (error) {
+        setLinks([]);
+      } finally {
+        setIsLoadingLinks(false);
+      }
+    };
+    fetchLinks();
+  }, []);
+
   const tools = [
     { 
       id: 'shortener', 
@@ -43,10 +61,10 @@ export default function DashboardPage() {
       color: 'bg-brand-turquoise/10 text-brand-turquoise'
     },
     { 
-      id: 'biolink', 
-      category: 'biolink',
-      name: 'Constructor Biolink', 
-      description: 'Tu página personal premium optimizada para conversión.',
+      id: 'signature', 
+      category: 'signature',
+      name: 'Generador de Firmas B2B', 
+      description: 'Crea firmas de correo profesionales y conectadas.',
       icon: ImageIcon, 
       color: 'bg-brand-magenta/10 text-brand-magenta'
     },
@@ -73,9 +91,9 @@ export default function DashboardPage() {
     : tools.filter(t => t.category === activeTab);
 
   const stats = [
-    { label: 'Clics totales', value: '1,284', icon: Activity, trend: '+12%' },
-    { label: 'Biolinks activos', value: '3', icon: Zap, trend: '+1' },
-    { label: 'Tasa conv.', value: '24.2%', icon: BarChart3, trend: '+4.5%' },
+    { label: 'Clics totales', value: '0', icon: Activity, trend: '0%' },
+    { label: 'Enlaces activos', value: links.length.toString(), icon: Zap, trend: '0' },
+    { label: 'Tasa conv.', value: '0%', icon: BarChart3, trend: '0%' },
   ];
 
   const renderContent = () => {
@@ -86,10 +104,10 @@ export default function DashboardPage() {
             <UrlShortenerTool />
           </div>
         );
-      case 'biolink':
+      case 'signature':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <BiolinkBuilder />
+            <SignatureBuilder />
           </div>
         );
       case 'qr':
@@ -123,17 +141,28 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                {stats.map((stat) => (
-                  <div key={stat.label} className="flex flex-col gap-1 rounded-2xl bg-white border border-slate-100 p-5 shadow-sm min-w-[140px]">
-                    <div className="flex items-center justify-between">
-                      <stat.icon size={18} className="text-slate-400" />
-                      <span className="text-[10px] font-black text-emerald-500">{stat.trend}</span>
+              <div className="flex flex-wrap gap-4 w-full">
+                {isLoadingLinks ? (
+                  <div className="h-24 w-full max-w-md bg-slate-100 animate-pulse rounded-2xl"></div>
+                ) : links.length > 0 ? (
+                  stats.map((stat) => (
+                    <div key={stat.label} className="flex flex-col gap-1 rounded-2xl bg-white border border-slate-100 p-5 shadow-sm min-w-[140px]">
+                      <div className="flex items-center justify-between">
+                        <stat.icon size={18} className="text-slate-400" />
+                        <span className="text-[10px] font-black text-slate-400">{stat.trend}</span>
+                      </div>
+                      <span className="text-2xl font-black text-slate-900">{stat.value}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
                     </div>
-                    <span className="text-2xl font-black text-slate-900">{stat.value}</span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-start gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100 w-full max-w-md">
+                    <p className="text-sm font-bold text-slate-600">Tus estadísticas aparecerán aquí cuando crees tu primer enlace.</p>
+                    <button onClick={() => setActiveTab('shortener')} className="px-5 py-2.5 bg-brand-turquoise text-white text-sm font-bold rounded-full hover:bg-brand-turquoise/90 transition-colors shadow-sm">
+                      Crear Enlace
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
             </header>
 

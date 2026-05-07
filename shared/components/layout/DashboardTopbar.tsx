@@ -10,9 +10,12 @@ import {
   ImageIcon, 
   QrCode,
   Search,
-  ChevronDown
+  ChevronDown,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface DashboardTopbarProps {
   activeTab: string;
@@ -20,6 +23,14 @@ interface DashboardTopbarProps {
 }
 
 export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps) {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
   const tabs = [
     { id: "top", label: "Top Herramientas", icon: Sparkles },
     { id: "shortener", label: "Acortador", icon: LinkIcon, color: "text-brand-turquoise", bg: "bg-brand-turquoise/10" },
@@ -117,19 +128,43 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
 
         {/* Right Actions */}
         <div className="flex items-center gap-3 shrink-0">
-          <button className="relative p-2.5 text-slate-500 transition-all hover:bg-slate-100 rounded-full hover:text-slate-900 active:scale-90">
+          {/* <button className="relative p-2.5 text-slate-500 transition-all hover:bg-slate-100 rounded-full hover:text-slate-900 active:scale-90">
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 flex h-2 w-2 rounded-full bg-brand-magenta ring-2 ring-white" />
           </button>
           
-          <div className="h-8 w-px bg-slate-200 mx-1" />
+          <div className="h-8 w-px bg-slate-200 mx-1" /> */}
           
-          <button className="flex items-center gap-2 p-1 pr-3 rounded-full border border-slate-200 hover:border-slate-300 transition-all active:scale-95 bg-white shadow-sm">
-             <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-100 flex items-center justify-center text-slate-600 overflow-hidden">
-                <User size={18} />
-             </div>
-             <span className="text-xs font-black text-slate-700 hidden lg:block">Perfil</span>
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 p-1 pr-3 rounded-full border border-slate-200 hover:border-slate-300 transition-all active:scale-95 bg-white shadow-sm"
+            >
+               <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-100 flex items-center justify-center text-slate-600 overflow-hidden">
+                  <User size={18} />
+               </div>
+               <div className="flex flex-col items-start hidden lg:flex mr-1 text-left">
+                 <span className="text-xs font-black text-slate-700 leading-tight">{user?.nombre || 'Perfil'}</span>
+                 <span className="text-[9px] font-bold text-slate-400 truncate max-w-[100px]">{user?.email || ''}</span>
+               </div>
+               <ChevronDown size={14} className="text-slate-400 hidden lg:block" />
+            </button>
+
+            {isDropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 animate-in fade-in slide-in-from-top-2">
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut size={16} />
+                    Cerrar Sesión
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

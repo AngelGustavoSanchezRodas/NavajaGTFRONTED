@@ -62,9 +62,9 @@ export function LinkList() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <GlassCard key={i} className="h-56 animate-pulse bg-gray-200/20 border-slate-200/50 rounded-[2.5rem]" />
+      <div className="w-full space-y-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="h-12 w-full bg-slate-200/50 animate-pulse rounded-xl" />
         ))}
       </div>
     );
@@ -74,8 +74,8 @@ export function LinkList() {
     return (
       <EmptyState
         icon={LinkIcon}
-        title="No tienes enlaces todavía"
-        description="Empieza creando un enlace corto o un Biolink para ver tus estadísticas aquí."
+        title="No hay enlaces"
+        description="No has creado ningún enlace todavía."
         actionLabel="Crear mi primer enlace"
         onAction={() => window.location.href = '/dashboard'}
       />
@@ -83,59 +83,65 @@ export function LinkList() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {links.map((link) => (
-        <GlassCard 
-          key={link.id} 
-          className="group p-6 rounded-[2.5rem] border border-slate-200/60 hover:border-brand-turquoise/30 transition-all duration-300 flex flex-col gap-4"
-        >
-          <div className="flex items-start justify-between">
-            <div className={cn(
-              "p-3 rounded-2xl",
-              link.tipo === 'BIOLINK' ? "bg-brand-magenta/10 text-brand-magenta" : "bg-brand-turquoise/10 text-brand-turquoise"
-            )}>
-              {link.tipo === 'BIOLINK' ? <Globe size={20} /> : <LinkIcon size={20} />}
-            </div>
-            <div className="flex items-center gap-1">
-              <button 
-                onClick={() => handleCopy(link.alias, link.id)}
-                className="p-2 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-50"
-              >
-                {activeId === link.id && copied ? <Check size={16} /> : <Copy size={16} />}
-              </button>
-              <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50">
-                <MoreVertical size={16} />
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <h4 className="font-black text-slate-900 text-lg tracking-tight truncate pr-4 max-w-full">
-              {link.tipo === 'BIOLINK' ? `/${link.alias}` : link.alias}
-            </h4>
-            <p className="text-xs font-medium text-slate-400 truncate max-w-[200px] sm:max-w-xs">
-              {link.urlOriginal || 'Perfil Biolink'}
-            </p>
-          </div>
-
-          <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-slate-500 font-bold text-xs">
-                <BarChart3 size={14} className="text-slate-400" />
-                {link.clicks} <span className="font-medium text-slate-400">clics</span>
-              </div>
-            </div>
-            <a 
-              href={`/${link.alias}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="p-2 bg-slate-50 text-slate-400 hover:text-brand-turquoise rounded-xl transition-all hover:bg-brand-turquoise/5"
-            >
-              <ExternalLink size={14} />
-            </a>
-          </div>
-        </GlassCard>
-      ))}
-    </div>
+    <GlassCard className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <tr>
+              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">Alias</th>
+              <th className="px-6 py-4">URL Original</th>
+              <th className="px-6 py-4">Tipo</th>
+              <th className="px-6 py-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {links.map((link) => (
+              <tr key={link.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4 font-mono text-xs text-slate-400">
+                  {link.id.substring(0, 8)}...
+                </td>
+                <td className="px-6 py-4 font-bold text-slate-900">
+                  /{link.alias}
+                </td>
+                <td className="px-6 py-4 text-slate-500 truncate max-w-[200px]">
+                  {link.urlOriginal || 'N/A'}
+                </td>
+                <td className="px-6 py-4">
+                  <span className={cn(
+                    "px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider",
+                    link.tipo === 'BIOLINK' ? "bg-brand-magenta/10 text-brand-magenta" : 
+                    link.tipo === 'SIGNATURE' ? "bg-emerald-100 text-emerald-600" :
+                    "bg-brand-turquoise/10 text-brand-turquoise"
+                  )}>
+                    {link.tipo}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button 
+                      onClick={() => handleCopy(link.alias, link.id)}
+                      className="p-1.5 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-100"
+                      title="Copiar Enlace"
+                    >
+                      {activeId === link.id && copied ? <Check size={16} /> : <Copy size={16} />}
+                    </button>
+                    <a 
+                      href={`/${link.alias}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-1.5 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-100"
+                      title="Abrir en nueva pestaña"
+                    >
+                      <ExternalLink size={16} />
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </GlassCard>
   );
 }

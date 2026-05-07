@@ -13,6 +13,7 @@ export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,14 +21,17 @@ export function RegisterForm() {
 
     try {
       const data = await authService.register(nombre, email, password);
-      toast.success("Cuenta creada correctamente");
+      toast.success("¡Cuenta creada exitosamente! Bienvenido.");
+      setIsSuccess(true);
       
-      if (data?.token) {
-        login(data.token, data.user);
-        window.location.href = "/";
-      } else {
-        window.location.href = "/login";
-      }
+      setTimeout(() => {
+        if (data?.token) {
+          login(data.token, data.user);
+          window.location.href = "/";
+        } else {
+          window.location.href = "/login";
+        }
+      }, 2000);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "No se pudo crear la cuenta";
@@ -92,11 +96,11 @@ export function RegisterForm() {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isSuccess}
           className="w-full flex items-center justify-center gap-2 rounded-full bg-brand-turquoise px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isLoading ? "Creando cuenta..." : "Crear cuenta"}
+          {(isLoading || isSuccess) && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSuccess ? "Redirigiendo..." : isLoading ? "Creando cuenta..." : "Crear cuenta"}
         </button>
       </form>
     </GlassCard>

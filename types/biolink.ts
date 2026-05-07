@@ -38,7 +38,7 @@ export interface MetadataBiolink {
 export interface EnlaceResponse {
   id: string;
   alias: string;
-  tipo: 'BIOLINK' | 'SHORT';
+  tipo: 'BIOLINK' | 'SHORT' | 'SIGNATURE' | 'URL' | 'PHONE' | 'WHATSAPP' | 'EMAIL';
   urlOriginal?: string;
   metadata: MetadataBiolink;
   activo: boolean;
