@@ -5,10 +5,12 @@ import { DashboardSidebar } from "@/shared/components/layout/DashboardSidebar";
 import { DashboardTopbar } from "@/shared/components/layout/DashboardTopbar";
 import { DashboardProvider, useDashboard } from "@/shared/contexts/DashboardContext";
 import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { activeTab, setActiveTab } = useDashboard();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const pathname = usePathname();
 
   return (
     <div className="flex min-h-screen bg-slate-50/50">
@@ -39,7 +41,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Page Content */}
-        <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 overflow-y-auto">
+        <main key={pathname} className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 overflow-y-auto">
           {children}
         </main>
       </div>

@@ -40,20 +40,7 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden md:flex w-64 flex-col bg-white border-r border-slate-200/60 sticky top-0 h-screen transition-all duration-300">
       <div className="p-8">
-        <div className="flex flex-col gap-4">
-          <BrandLogo />
-          <div className="flex items-center gap-2">
-            <span className="text-slate-300 text-xs font-bold uppercase tracking-widest">por</span>
-            <a 
-              href="https://aba-page-nine.vercel.app/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-slate-400 text-[10px] font-black uppercase tracking-tighter hover:text-brand-turquoise transition-colors"
-            >
-              ABA Estudios
-            </a>
-          </div>
-        </div>
+        <BrandLogo />
       </div>
 
       <nav className="flex-1 px-4 space-y-8">

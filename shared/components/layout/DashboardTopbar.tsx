@@ -32,10 +32,10 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
     router.push('/login');
   };
   const tabs = [
-    { id: "top", label: "Top Herramientas", icon: Sparkles },
     { id: "shortener", label: "Acortador", icon: LinkIcon, color: "text-brand-turquoise", bg: "bg-brand-turquoise/10" },
     { id: "qr", label: "Códigos QR", icon: QrCode, color: "text-amber-600", bg: "bg-amber-500/10" },
     { id: "signature", label: "Firmas", icon: ImageIcon, color: "text-brand-magenta", bg: "bg-brand-magenta/10" },
+    { id: "image-converter", label: "Convertidor", icon: ImageIcon, color: "text-slate-900", bg: "bg-slate-900/10" },
   ];
 
   return (
@@ -65,7 +65,7 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Nuestro Ecosistema</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {tabs.filter(t => t.id !== "top").map((tool) => (
+                  {tabs.map((tool) => (
                     <button
                       key={tool.id}
                       onClick={() => onTabChange(tool.id)}

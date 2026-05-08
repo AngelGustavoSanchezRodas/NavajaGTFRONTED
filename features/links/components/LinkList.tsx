@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
   Link as LinkIcon, 
   ExternalLink, 
   Copy, 
   Check, 
-  MoreVertical, 
-  BarChart3, 
-  Calendar,
-  Globe,
+  MoreVertical,
   Trash2,
-  Edit2
+  QrCode,
+  FileSignature,
+  Globe,
+  X,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiFetch } from '@/shared/lib/api';
@@ -22,49 +23,178 @@ import { cn } from '@/shared/lib/utils';
 import { useCopyToClipboard } from '@/shared/hooks/useCopyToClipboard';
 import { useRouter } from 'next/navigation';
 
+// ── Badge de tipo ─────────────────────────────────────────
+function TipoBadge({ tipo }: { tipo: string }) {
+  const map: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
+    BIOLINK:   { label: 'Biolink',   icon: <Globe size={12} />,         cls: 'bg-brand-magenta/10 text-brand-magenta' },
+    SIGNATURE: { label: 'Firma',     icon: <FileSignature size={12} />, cls: 'bg-emerald-100 text-emerald-600' },
+    SHORT:     { label: 'Acortador', icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
+    STANDARD:  { label: 'Enlace',    icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
+    URL:       { label: 'URL',       icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
+    PHONE:     { label: 'Teléfono',  icon: <QrCode size={12} />,        cls: 'bg-amber-100 text-amber-600' },
+    WHATSAPP:  { label: 'WhatsApp',  icon: <QrCode size={12} />,        cls: 'bg-green-100 text-green-600' },
+    EMAIL:     { label: 'Email',     icon: <QrCode size={12} />,        cls: 'bg-purple-100 text-purple-600' },
+  };
+  const config = map[tipo] ?? { label: tipo, icon: <LinkIcon size={12} />, cls: 'bg-slate-100 text-slate-600' };
+  return (
+    <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider', config.cls)}>
+      {config.icon}
+      {config.label}
+    </span>
+  );
+}
+
+// ── Menú de acciones por fila ──────────────────────────────
+function ActionsDropdown({ link, onDelete }: { link: EnlaceResponse; onDelete: (link: EnlaceResponse) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { copy, copied } = useCopyToClipboard();
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleCopy = () => {
+    copy(`${window.location.origin}/${link.alias}`);
+    toast.success('¡Enlace copiado al portapapeles!');
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative inline-block">
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+        title="Acciones"
+      >
+        <MoreVertical size={16} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            {copied ? <Check size={15} className="text-emerald-500" /> : <Copy size={15} />}
+            Copiar enlace
+          </button>
+          <a
+            href={`/${link.alias}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            <ExternalLink size={15} />
+            Visitar
+          </a>
+          <div className="border-t border-slate-100 my-1" />
+          <button
+            onClick={() => { onDelete(link); setOpen(false); }}
+            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <Trash2 size={15} />
+            Eliminar
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Modal de confirmación de eliminación ───────────────────
+function DeleteModal({ link, onConfirm, onCancel, isDeleting }: {
+  link: EnlaceResponse;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full animate-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between mb-6">
+          <div className="p-3 bg-red-100 rounded-2xl">
+            <Trash2 size={22} className="text-red-500" />
+          </div>
+          <button onClick={onCancel} className="p-2 text-slate-400 hover:text-slate-700 rounded-lg transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+        <h3 className="text-xl font-[1000] text-slate-900 mb-2">¿Eliminar enlace?</h3>
+        <p className="text-sm font-medium text-slate-500 mb-6">
+          El alias <span className="font-black text-slate-800">/{link.alias}</span> será eliminado permanentemente. Esta acción no se puede deshacer.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+            {isDeleting ? 'Eliminando...' : 'Sí, eliminar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Componente principal ───────────────────────────────────
 export function LinkList() {
   const [links, setLinks] = useState<EnlaceResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const { copy, copied } = useCopyToClipboard();
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<EnlaceResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchLinks = async () => {
       try {
         const data = await apiFetch<EnlaceResponse[]>('/api/management/links/list/');
-        setLinks(data);
+        setLinks(data || []);
       } catch (err: unknown) {
-        const error = err as { status?: number; message?: string };
-        
-        if (error.status === 401) {
-          router.push('/login');
-        } else if (error.status === 400) {
-          toast.error(error.message || 'Solicitud incorrecta');
-        } else {
-          toast.error('Error al cargar enlaces');
-        }
+        setLinks([]);
+        const error = err as { status?: number };
+        if (error.status === 401) router.push('/login');
+        else toast.error('Error al cargar los enlaces');
       } finally {
         setLoading(false);
       }
     };
-
     fetchLinks();
   }, []);
 
-  const handleCopy = (alias: string, id: string) => {
-    const appUrl = window.location.origin;
-    const url = `${appUrl}/${alias}`;
-    setActiveId(id);
-    copy(url);
-    setTimeout(() => setActiveId(null), 2000);
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    setIsDeleting(true);
+    try {
+      await apiFetch(`/api/management/links/${toDelete.id}/`, { method: 'DELETE' });
+      setLinks(prev => prev.filter(l => l.id !== toDelete.id));
+      toast.success(`Enlace /${toDelete.alias} eliminado.`);
+    } catch {
+      toast.error('No se pudo eliminar el enlace.');
+    } finally {
+      setIsDeleting(false);
+      setToDelete(null);
+    }
   };
 
   if (loading) {
     return (
       <div className="w-full space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-12 w-full bg-slate-200/50 animate-pulse rounded-xl" />
+          <div key={i} className="h-14 w-full bg-slate-100/80 animate-pulse rounded-xl" />
         ))}
       </div>
     );
@@ -74,78 +204,76 @@ export function LinkList() {
     return (
       <EmptyState
         icon={LinkIcon}
-        title="No hay enlaces"
-        description="No has creado ningún enlace todavía."
-        actionLabel="Crear mi primer enlace"
-        onAction={() => window.location.href = '/dashboard'}
+        title="Sin enlaces todavía"
+        description="Crea tu primer enlace corto, QR o firma digital desde el panel de herramientas."
+        actionLabel="Ir a Herramientas"
+        onAction={() => router.push('/dashboard')}
       />
     );
   }
 
   return (
-    <GlassCard className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-            <tr>
-              <th className="px-6 py-4">ID</th>
-              <th className="px-6 py-4">Alias</th>
-              <th className="px-6 py-4">URL Original</th>
-              <th className="px-6 py-4">Tipo</th>
-              <th className="px-6 py-4">Fecha</th>
-              <th className="px-6 py-4 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {links.map((link) => (
-              <tr key={link.id} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4 font-mono text-xs text-slate-400">
-                  {link.id.substring(0, 8)}...
-                </td>
-                <td className="px-6 py-4 font-bold text-slate-900">
-                  /{link.alias}
-                </td>
-                <td className="px-6 py-4 text-slate-500 truncate max-w-[200px]">
-                  {link.urlOriginal || 'N/A'}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={cn(
-                    "px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider",
-                    link.tipo === 'BIOLINK' ? "bg-brand-magenta/10 text-brand-magenta" : 
-                    link.tipo === 'SIGNATURE' ? "bg-emerald-100 text-emerald-600" :
-                    "bg-brand-turquoise/10 text-brand-turquoise"
-                  )}>
-                    {link.tipo}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-slate-500 text-xs font-medium">
-                  {link.createdAt ? new Date(link.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Hoy'}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button 
-                      onClick={() => handleCopy(link.alias, link.id)}
-                      className="p-1.5 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-100"
-                      title="Copiar Enlace"
-                    >
-                      {activeId === link.id && copied ? <Check size={16} /> : <Copy size={16} />}
-                    </button>
-                    <a 
-                      href={`/${link.alias}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-1.5 text-slate-400 hover:text-brand-turquoise transition-colors rounded-lg hover:bg-slate-100"
-                      title="Abrir en nueva pestaña"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                </td>
+    <>
+      {toDelete && (
+        <DeleteModal
+          link={toDelete}
+          onConfirm={handleDelete}
+          onCancel={() => setToDelete(null)}
+          isDeleting={isDeleting}
+        />
+      )}
+
+      <GlassCard className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+              <tr>
+                <th className="px-6 py-4">Nombre / Destino</th>
+                <th className="px-6 py-4">Tipo</th>
+                <th className="px-6 py-4">Creación</th>
+                <th className="px-6 py-4">Estadísticas</th>
+                <th className="px-6 py-4 text-right">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </GlassCard>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {links.map((link) => (
+                <tr key={link.id} className="hover:bg-slate-50/80 transition-colors">
+                  {/* Nombre / Destino */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-black text-slate-900">/{link.alias}</span>
+                      {link.urlOriginal && (
+                        <span className="text-[11px] font-medium text-slate-400 truncate max-w-[240px]">
+                          {link.urlOriginal}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  {/* Tipo */}
+                  <td className="px-6 py-4">
+                    <TipoBadge tipo={link.tipo} />
+                  </td>
+                  {/* Fecha */}
+                  <td className="px-6 py-4 text-slate-500 text-xs font-medium whitespace-nowrap">
+                    {link.createdAt
+                      ? new Date(link.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                      : 'Hoy'}
+                  </td>
+                  {/* Clics */}
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-black text-slate-700">{link.clicks ?? 0}</span>
+                    <span className="text-[10px] text-slate-400 ml-1">clics</span>
+                  </td>
+                  {/* Acciones */}
+                  <td className="px-6 py-4 text-right">
+                    <ActionsDropdown link={link} onDelete={setToDelete} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+    </>
   );
 }
