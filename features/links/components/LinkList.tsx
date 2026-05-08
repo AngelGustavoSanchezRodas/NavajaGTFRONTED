@@ -156,13 +156,13 @@ export function LinkList() {
   useEffect(() => {
     const fetchLinks = async () => {
       try {
-        const data = await apiFetch<EnlaceResponse[]>('/api/management/links/list/');
-        setLinks(data || []);
+        const data = await apiFetch<EnlaceResponse[]>('/api/management/links/list');
+        setLinks(Array.isArray(data) ? data : []);
       } catch (err: unknown) {
         setLinks([]);
-        const error = err as { status?: number };
+        const error = err as { status?: number; message?: string };
         if (error.status === 401) router.push('/login');
-        else toast.error('Error al cargar los enlaces');
+        else toast.error(error.message || 'Error al cargar los enlaces');
       } finally {
         setLoading(false);
       }
@@ -177,8 +177,9 @@ export function LinkList() {
       await apiFetch(`/api/management/links/${toDelete.id}`, { method: 'DELETE' });
       setLinks(prev => prev.filter(l => l.id !== toDelete.id));
       toast.success('Enlace eliminado correctamente');
-    } catch {
-      toast.error('No se pudo eliminar el enlace.');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || 'No se pudo eliminar el enlace.');
     } finally {
       setIsDeleting(false);
       setToDelete(null);
@@ -250,8 +251,8 @@ export function LinkList() {
                   </td>
                   {/* Fecha */}
                   <td className="px-6 py-4 text-slate-500 text-xs font-medium whitespace-nowrap">
-                    {link.createdAt
-                      ? new Date(link.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                    {link.fechaCreacion
+                      ? new Date(link.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
                       : 'Hoy'}
                   </td>
                   {/* Clics */}

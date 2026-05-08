@@ -84,7 +84,7 @@ const BiolinkBuilder: React.FC = () => {
     };
 
     try {
-      const respuesta = await apiFetch<{ alias: string }>('/api/core/links/create/', {
+      const respuesta = await apiFetch<{ alias: string }>('/api/core/links/create', {
         method: 'POST',
         body: JSON.stringify({
           aliasPersonalizado: aliasPersonalizado || null,

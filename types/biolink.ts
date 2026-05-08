@@ -43,5 +43,5 @@ export interface EnlaceResponse {
   metadata: MetadataBiolink;
   activo: boolean;
   clicks: number;
-  createdAt?: string;
+  fechaCreacion?: string;
 }

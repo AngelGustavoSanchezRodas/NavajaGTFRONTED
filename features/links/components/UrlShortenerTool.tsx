@@ -38,7 +38,7 @@ export function UrlShortenerTool() {
     setShortUrl(null);
 
     try {
-      const response = await apiFetch<any>('/api/core/links/create/', {
+      const response = await apiFetch<any>('/api/core/links/create', {
         method: 'POST',
         body: JSON.stringify({ 
           urlOriginal: url, 

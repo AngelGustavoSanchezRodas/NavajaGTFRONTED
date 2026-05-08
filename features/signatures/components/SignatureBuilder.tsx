@@ -92,7 +92,7 @@ export function SignatureBuilder() {
         }
       };
 
-      await apiFetch('/api/core/links/create/', {
+      await apiFetch('/api/core/links/create', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
