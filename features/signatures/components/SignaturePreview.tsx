@@ -8,8 +8,20 @@ export interface SignatureData {
   telefono: string;
   sitioWeb: string;
   photoUrl: string;
-  linkedin: string;
-  twitter: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  tiktok?: string;
+  youtube?: string;
+  twitch?: string;
+  discord?: string;
+  reddit?: string;
+  behance?: string;
+  dribbble?: string;
+  gitlab?: string;
+  medium?: string;
+  devto?: string;
+  stackoverflow?: string;
 }
 
 interface SignaturePreviewProps {
@@ -96,26 +108,26 @@ export const SignaturePreview = forwardRef<HTMLDivElement, SignaturePreviewProps
                     </tr>
                     
                     {/* Social Links */}
-                    {(data.linkedin || data.twitter) && (
+                    {Object.keys(data).filter(key => ['github', 'linkedin', 'twitter', 'tiktok', 'youtube', 'twitch', 'discord', 'reddit', 'behance', 'dribbble', 'gitlab', 'medium', 'devto', 'stackoverflow'].includes(key) && data[key as keyof SignatureData]).length > 0 && (
                       <tr>
                         <td style={{ paddingTop: '12px' }}>
                           <table cellPadding={0} cellSpacing={0} border={0}>
                             <tbody>
                               <tr>
-                                {data.linkedin && (
-                                  <td style={{ paddingRight: '8px' }}>
-                                    <a href={data.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: 'none', fontSize: '12px', fontWeight: 'bold' }}>
-                                      LinkedIn
-                                    </a>
-                                  </td>
-                                )}
-                                {data.twitter && (
-                                  <td>
-                                    <a href={data.twitter} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: 'none', fontSize: '12px', fontWeight: 'bold' }}>
-                                      Twitter
-                                    </a>
-                                  </td>
-                                )}
+                                {['github', 'linkedin', 'twitter', 'tiktok', 'youtube', 'twitch', 'discord', 'reddit', 'behance', 'dribbble', 'gitlab', 'medium', 'devto', 'stackoverflow'].map((platform) => {
+                                  const url = data[platform as keyof SignatureData];
+                                  if (!url) return null;
+                                  
+                                  const label = platform.charAt(0).toUpperCase() + platform.slice(1);
+                                  
+                                  return (
+                                    <td key={platform} style={{ paddingRight: '12px' }}>
+                                      <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
+                                        {label}
+                                      </a>
+                                    </td>
+                                  );
+                                })}
                               </tr>
                             </tbody>
                           </table>

@@ -92,6 +92,7 @@ export function LinkList() {
               <th className="px-6 py-4">Alias</th>
               <th className="px-6 py-4">URL Original</th>
               <th className="px-6 py-4">Tipo</th>
+              <th className="px-6 py-4">Fecha</th>
               <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
           </thead>
@@ -116,6 +117,9 @@ export function LinkList() {
                   )}>
                     {link.tipo}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-slate-500 text-xs font-medium">
+                  {link.createdAt ? new Date(link.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Hoy'}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">

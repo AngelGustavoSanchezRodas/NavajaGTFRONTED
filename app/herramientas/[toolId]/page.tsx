@@ -17,7 +17,8 @@ export default function ToolPage() {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    return () => setIsMounted(false);
+  }, [toolId]);
 
   const renderTool = () => {
     switch (toolId) {

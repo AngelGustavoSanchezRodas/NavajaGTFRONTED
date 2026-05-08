@@ -35,6 +35,18 @@ export function SignatureBuilder() {
     photoUrl: '',
     linkedin: '',
     twitter: '',
+    github: '',
+    tiktok: '',
+    youtube: '',
+    twitch: '',
+    discord: '',
+    reddit: '',
+    behance: '',
+    dribbble: '',
+    gitlab: '',
+    medium: '',
+    devto: '',
+    stackoverflow: '',
   });
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -158,6 +170,7 @@ export function SignatureBuilder() {
                         placeholder="https://ejemplo.com/mifoto.jpg"
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
                       />
+                      <p className="text-[10px] text-slate-400 font-medium px-1">Usa enlaces directos (.jpg, .png)</p>
                     </div>
                   </div>
                 </motion.div>
@@ -265,25 +278,19 @@ export function SignatureBuilder() {
                   className="overflow-hidden bg-slate-50/50"
                 >
                   <div className="p-5 space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">LinkedIn (URL)</label>
-                      <input 
-                        type="url" 
-                        value={data.linkedin}
-                        onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                        placeholder="https://linkedin.com/in/usuario"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Twitter (URL)</label>
-                      <input 
-                        type="url" 
-                        value={data.twitter}
-                        onChange={(e) => handleInputChange('twitter', e.target.value)}
-                        placeholder="https://twitter.com/usuario"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {['github', 'linkedin', 'twitter', 'tiktok', 'youtube', 'twitch', 'discord', 'reddit', 'behance', 'dribbble', 'gitlab', 'medium', 'devto', 'stackoverflow'].map((platform) => (
+                        <div key={platform} className="space-y-2">
+                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{platform}</label>
+                          <input 
+                            type="url" 
+                            value={data[platform as keyof SignatureData] || ''}
+                            onChange={(e) => handleInputChange(platform as keyof SignatureData, e.target.value)}
+                            placeholder={`https://${platform}.com/...`}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-turquoise focus:ring-2 focus:ring-brand-turquoise/20 transition-all"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -307,7 +314,7 @@ export function SignatureBuilder() {
                 className={cn(
                   "relative flex-shrink-0 px-5 py-3 rounded-xl border-2 text-sm font-bold transition-all",
                   templateId === t.id 
-                    ? "border-brand-turquoise bg-brand-turquoise/10 text-brand-turquoise" 
+                    ? "border-brand-turquoise bg-brand-turquoise/10 text-brand-turquoise ring-2 ring-blue-500 ring-offset-2" 
                     : "border-slate-100 bg-white text-slate-600 hover:border-slate-200"
                 )}
               >
@@ -317,11 +324,6 @@ export function SignatureBuilder() {
                     <Lock size={14} className={templateId === t.id ? "text-brand-turquoise" : "text-brand-mustard"} />
                   )}
                 </div>
-                {templateId === t.id && (
-                  <div className="absolute -top-2 -right-2 bg-brand-turquoise text-white p-1 rounded-full">
-                    <Check size={12} />
-                  </div>
-                )}
               </button>
             ))}
           </div>

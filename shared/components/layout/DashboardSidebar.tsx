@@ -7,8 +7,7 @@ import {
   LayoutDashboard, 
   Link as LinkIcon, 
   Settings, 
-  CreditCard, 
-  LogOut,
+  CreditCard,
   ChevronRight,
   Sparkles
 } from "lucide-react";
@@ -37,11 +36,6 @@ export function DashboardSidebar() {
       ],
     },
   ];
-
-  const handleLogout = () => {
-    authService.logout();
-    window.location.href = "/";
-  };
 
   return (
     <aside className="hidden md:flex w-64 flex-col bg-white border-r border-slate-200/60 sticky top-0 h-screen transition-all duration-300">
@@ -102,14 +96,6 @@ export function DashboardSidebar() {
         >
           <Sparkles size={16} className="animate-pulse" />
           Upgrade PRO
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-4 py-3 rounded-xl font-bold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
-        >
-          <LogOut size={18} />
-          <span className="text-sm">Cerrar Sesión</span>
         </button>
       </div>
 
