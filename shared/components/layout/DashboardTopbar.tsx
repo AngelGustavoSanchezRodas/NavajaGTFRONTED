@@ -16,6 +16,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface DashboardTopbarProps {
   activeTab: string;
@@ -66,8 +67,9 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {tabs.map((tool) => (
-                    <button
+                    <Link
                       key={tool.id}
+                      href="/dashboard"
                       onClick={() => onTabChange(tool.id)}
                       className="group/item flex items-start gap-4 rounded-xl p-4 text-left transition-all hover:bg-slate-50"
                     >
@@ -78,17 +80,18 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
                         <h4 className="text-sm font-black text-slate-900">{tool.label}</h4>
                         <p className="text-[11px] font-medium leading-relaxed text-slate-400">Acceso directo a la herramienta</p>
                       </div>
-                    </button>
+                    </Link>
                   ))}
                   
                   {/* Option for the Top tab in the menu too? Or just a special footer? */}
                   <div className="col-span-2 mt-2 border-t border-slate-50 pt-2">
-                    <button 
+                    <Link 
+                      href="/dashboard"
                       onClick={() => onTabChange("all")}
                       className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold text-slate-400 hover:bg-slate-50 hover:text-brand-turquoise transition-colors"
                     >
                       Ver vista general de herramientas
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -108,8 +111,9 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
                 : "bg-brand-turquoise/10 text-brand-turquoise";
 
               return (
-                <button
+                <Link
                   key={tab.id}
+                  href="/dashboard"
                   onClick={() => onTabChange(tab.id)}
                   className={cn(
                     "flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 active:scale-95",
@@ -120,7 +124,7 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
                 >
                   <tab.icon size={16} className={cn("transition-transform duration-300", isActive && "scale-110")} />
                   {tab.label}
-                </button>
+                </Link>
               );
             })}
           </nav>

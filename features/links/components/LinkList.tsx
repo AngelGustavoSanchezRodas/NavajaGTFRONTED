@@ -26,14 +26,9 @@ import { useRouter } from 'next/navigation';
 // ── Badge de tipo ─────────────────────────────────────────
 function TipoBadge({ tipo }: { tipo: string }) {
   const map: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
-    BIOLINK:   { label: 'Biolink',   icon: <Globe size={12} />,         cls: 'bg-brand-magenta/10 text-brand-magenta' },
     SIGNATURE: { label: 'Firma',     icon: <FileSignature size={12} />, cls: 'bg-emerald-100 text-emerald-600' },
-    SHORT:     { label: 'Acortador', icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
     STANDARD:  { label: 'Enlace',    icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
-    URL:       { label: 'URL',       icon: <LinkIcon size={12} />,      cls: 'bg-brand-turquoise/10 text-brand-turquoise' },
-    PHONE:     { label: 'Teléfono',  icon: <QrCode size={12} />,        cls: 'bg-amber-100 text-amber-600' },
-    WHATSAPP:  { label: 'WhatsApp',  icon: <QrCode size={12} />,        cls: 'bg-green-100 text-green-600' },
-    EMAIL:     { label: 'Email',     icon: <QrCode size={12} />,        cls: 'bg-purple-100 text-purple-600' },
+    QR:        { label: 'Código QR', icon: <QrCode size={12} />,        cls: 'bg-amber-100 text-amber-600' },
   };
   const config = map[tipo] ?? { label: tipo, icon: <LinkIcon size={12} />, cls: 'bg-slate-100 text-slate-600' };
   return (
@@ -179,9 +174,9 @@ export function LinkList() {
     if (!toDelete) return;
     setIsDeleting(true);
     try {
-      await apiFetch(`/api/management/links/${toDelete.id}/`, { method: 'DELETE' });
+      await apiFetch(`/api/management/links/${toDelete.id}`, { method: 'DELETE' });
       setLinks(prev => prev.filter(l => l.id !== toDelete.id));
-      toast.success(`Enlace /${toDelete.alias} eliminado.`);
+      toast.success('Enlace eliminado correctamente');
     } catch {
       toast.error('No se pudo eliminar el enlace.');
     } finally {
