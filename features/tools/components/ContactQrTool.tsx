@@ -148,7 +148,7 @@ export const ContactQrTool: React.FC = () => {
       });
 
       if (!response.ok) {
-        if (response.status === 403) {
+        if (response.status === 402 || response.status === 403) {
           setIsProModalOpen(true);
           return;
         }

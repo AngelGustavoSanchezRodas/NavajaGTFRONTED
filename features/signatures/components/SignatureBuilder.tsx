@@ -99,9 +99,9 @@ export function SignatureBuilder() {
       
       toast.success("¡Firma guardada correctamente!");
     } catch (error: any) {
-      if (error.status === 403) {
+      if (error.status === 402 || error.status === 403) {
         setIsProModalOpen(true);
-        toast.error('La plantilla seleccionada es exclusiva del plan PRO.');
+        toast.error(error.message || 'La plantilla seleccionada es exclusiva del plan PRO.');
         return;
       }
       console.error("Error al guardar:", error);

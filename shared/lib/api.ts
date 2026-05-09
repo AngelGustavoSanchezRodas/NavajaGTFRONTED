@@ -21,6 +21,7 @@ export async function apiFetch<T>(endpoint: string, options: ApiOptions = {}): P
   }
 
   const config: RequestInit = {
+    cache: 'no-store',
     ...fetchOptions,
     headers: {
       ...defaultHeaders,
