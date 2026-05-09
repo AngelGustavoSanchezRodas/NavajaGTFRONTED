@@ -30,7 +30,7 @@ export function DashboardTopbar({ activeTab, onTabChange }: DashboardTopbarProps
 
   const handleLogout = () => {
     logout();
-    router.push('/login');
+    window.location.href = '/login';
   };
   const tabs = [
     { id: "shortener", label: "Acortador", icon: LinkIcon, color: "text-brand-turquoise", bg: "bg-brand-turquoise/10" },
