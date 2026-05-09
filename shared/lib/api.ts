@@ -50,5 +50,6 @@ export async function apiFetch<T>(endpoint: string, options: ApiOptions = {}): P
     return blob as unknown as T;
   }
 
-  return await response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
