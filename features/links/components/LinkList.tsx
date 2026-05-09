@@ -22,6 +22,7 @@ import { GlassCard } from '@/shared/components/ui/GlassCard';
 import { cn } from '@/shared/lib/utils';
 import { useCopyToClipboard } from '@/shared/hooks/useCopyToClipboard';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 // ── Badge de tipo ─────────────────────────────────────────
 function TipoBadge({ tipo }: { tipo: string }) {
@@ -173,14 +174,37 @@ export function LinkList() {
   const handleDelete = async () => {
     if (!toDelete) return;
     setIsDeleting(true);
+
     try {
-      await apiFetch(`/api/management/links/${toDelete.id}`, { method: 'DELETE' });
-      setLinks(prev => prev.filter(l => l.id !== toDelete.id));
-      toast.success('Enlace eliminado correctamente');
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      toast.error(error.message || 'No se pudo eliminar el enlace.');
+      const token = Cookies.get('token');
+      // Usamos fetch nativo exactamente como indicó el Backend para evitar el parseo forzado a JSON
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/management/links/${toDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // 1. Si la respuesta es exitosa (200 OK o 204 No Content)
+      if (response.ok) {
+        // ¡CERO parseo de .json() aquí!
+        setLinks(prev => prev.filter(l => l.id !== toDelete.id));
+        toast.success('Enlace eliminado correctamente');
+      } 
+      // 2. Manejo de errores específicos (Seguridad)
+      else if (response.status === 404) {
+        toast.error('El enlace no existe o no te pertenece.');
+      } else if (response.status === 403) {
+        toast.error('No tienes permisos para eliminar este enlace.');
+      } else {
+        toast.error('Error al eliminar el enlace en el servidor.');
+      }
+
+    } catch (error) {
+      console.error("Fallo de red al eliminar:", error);
+      toast.error('Ocurrió un error de conexión al eliminar.');
     } finally {
+      // Limpiamos los estados del modal
       setIsDeleting(false);
       setToDelete(null);
     }
