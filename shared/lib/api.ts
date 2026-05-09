@@ -51,5 +51,5 @@ export async function apiFetch<T>(endpoint: string, options: ApiOptions = {}): P
   }
 
   const text = await response.text();
-  return text ? JSON.parse(text) : null;
+  return (text ? JSON.parse(text) : null) as T;
 }
